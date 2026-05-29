@@ -4,163 +4,154 @@ Instructions and context for Claude Code working in this project.
 
 ## Project Overview
 
-Single-page landing page for **Or HaTzadik – Ronit Barash** (אור הצדיק – רונית ברש)
-promoting her **Challah Separation evenings** (ערב הפרשת חלה) — luxury, emotional
-women-only productions for brides, Bat Mitzvahs, pre-birth blessings, and prayers
-for salvation/healing. 20 years of event-production experience.
+Single-page **Hebrew RTL** landing page for **Or HaTzadik – Ronit Barash**
+(אור הצדיק – רונית ברש) promoting her **Challah Separation evenings**
+(ערב הפרשת חלה) — luxury, emotional, women-only productions for brides,
+Bat Mitzvahs, pre-birth blessings, and prayers for salvation/healing.
+20 years of event-production experience. The page opens with בס"ד.
 
-This is the **second page** in Ronit's brand. The first is the Uman / Tu B'Av trip
-page (`../inbalel-website`). This page must stay **visually consistent** with it —
-same warm earth-tone palette, same Hebrew typography, same calm spiritual mood —
-so all of Ronit's pages read as one brand. Reuse the design tokens below verbatim.
+**Language:** Hebrew only (RTL). English was deferred.
 
-The page opens with בס"ד.
+**Aesthetic:** soft **ivory + gold "peaceful wedding"** — light, airy, elegant,
+restrained gold accents, an elegant serif for headings, the all-white event photos
+framed in gold. (Design history: a warm-cream version read too much like the sister
+Uman page; a dark high-fashion version felt generic; the client settled on this
+ivory+gold direction. It is intentionally its own look, NOT a copy of the Uman page.)
 
-## Content
+There is a sister site (`../inbalel-website`, the Uman / Tu B'Av trip) — same brand,
+same lead backend — but this page has its own distinct design. Don't re-mirror it.
 
-Client-supplied copy is bilingual:
+## Stack
 
-- **Hebrew** is the primary/canonical version — RTL, lead with this.
-- **English** is the secondary version (same content, provided by the client).
-
-Keep both copies in `content/` as the human-readable source of truth
-(`content/copy.he.md`, `content/copy.en.md`), and mirror them into typed TS
-modules under `src/content/` that components import. **No copy strings live inside
-JSX** — components reference the content module. The markdown wins on disagreement.
-
-Key copy blocks (do not paraphrase the client's wording):
-- Hook: "הפקת ערב הפרשת חלה שלא תשכחי בחיים" / "A Challah Separation Evening You'll Never Forget"
-- "מה כולל הערב?" / "What's Included in the Evening?" — the icon bullet list (host + shofar, sound system, 2 drummers, shofars, entrance carpet, ceremony, music/dancing).
-- Ceremony duration: 1.5–2 hours (שעה וחצי לשעתיים).
-- "מתאים במיוחד עבור" / "Perfect For" list.
-- "למה דווקא אנחנו?" / "Why Choose Us?" list.
-- Closing quote: "יש ערבים שלא שוכחים… ויש רגעים שנשארים בלב לכל החיים ❤️"
-- CTA: "💍 תשרייני לי תאריך" / "💍 Reserve My Date"
-
-## Stack (mirror the brand page)
-
-- **Vite + React 18 + TypeScript** — SPA, no SSR, single page.
-- **Tailwind CSS** — palette locked in `tailwind.config.ts`.
-- **Framer Motion** — reveal + float + hover micro-interactions only.
-- **Google Font: Assistant** — the brand's Hebrew typeface (free analog to "Ravmesser Assistant").
-- **No router** — single page, anchor scrolling only.
+- **Vite + React 18 + TypeScript** — SPA, single page, no router, anchor scroll.
+- **Tailwind CSS 3** — all tokens in `tailwind.config.ts`; avoid hardcoding hex in JSX.
+- **Framer Motion** — reveals + the video coverflow + the lightbox. The ONLY animation lib.
+- **lucide-react** — line icons. **clsx + tailwind-merge** — the `cn()` helper.
+- **sharp** (image optimize) + **ffmpeg/ffprobe** (video optimize). **vitest** — one logic test.
+- Fonts (Google): **Frank Ruhl Libre** (display/serif headings), **Assistant** (body), **Heebo** (small labels).
 
 ## Run
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173
-npm run build        # production build to dist/
-npm run preview      # serve the production build
+npm run dev            # http://localhost:5174
+npm run build          # tsc -b && vite build → dist/
+npm run preview
+npm test               # vitest (lead-payload unit tests)
+npm run optimize:media # photos  → public/images/*.webp
+npm run optimize:videos# videos  → public/videos/*.mp4 + .webp posters
 ```
 
-## Design tokens — SHARED BRAND PALETTE (copied from the Uman page)
+**Dev-server gotcha:** editing `tailwind.config.ts`, `index.html` (fonts), or
+`vite.config.ts` requires a **dev server restart** — Vite caches these and HMR won't
+pick them up (symptom: stale colors, or a `bg-…` "class does not exist" overlay).
 
-All colors, fonts, max-widths, and easings live ONLY in `tailwind.config.ts`.
-Components consume tokens via Tailwind utilities — **never hardcode hex in JSX/CSS**.
+## Design tokens (ivory + gold)
 
-Theme audit (must return only `tailwind.config.ts`):
-```bash
-grep -rE '#[0-9a-fA-F]{3,6}' src/
-```
+In `tailwind.config.ts` → `theme.extend.colors`:
 
 | Token | Value | Purpose |
 |---|---|---|
-| `hero` | `#b89e8b` | hero + closing-quote background |
-| `cream` | `#fffcf9` | primary section background |
-| `cream-alt` | `#fffbf9` | alternating section background |
-| `accent` | `#c3957d` | CTA & form section background |
-| `accent-soft` | `#e6d2c4` | soft accent fills |
-| `button` | `#87573e` | primary button fill |
-| `button-text` | `#eeecea` | button text |
-| `ink-deep` | `#6b4532` | headings on cream sections |
-| `ink-body` | `#2d2d2d` | body copy |
-| `ink-night` | `#1a1612` | deepest text/overlays |
-| `ivory` | `#faf6ee` | text over photos/overlays |
-| `divider` | `#efe5dc` | 2px section separator |
-| `gold` | `#c5a572` | accent / shofar / sparkle detail |
+| `ivory` | `#fbf8f2` | primary section background, light text on photos |
+| `linen` | `#f3ecdf` | alternating section background |
+| `champagne` | `#efe3cf` | gold-tinted panels / icon chips / footer |
+| `ink` | `#3a322a` | headings + body (warm near-black) |
+| `ink-soft` | `#6b5f4f` | secondary / muted text |
+| `gold` | `#c8a45c` | primary accent (rules, frames, CTA) |
+| `gold-deep` | `#a87f38` | gold text on light (better contrast) |
+| `gold-lite` | `#e7cf9a` | CTA gradient highlight |
+| `line` | `#e6dcc9` | hairline borders |
 
-Other locked tokens: `fontFamily.sans = ['Assistant', ...]`, `maxWidth.container = 906px`,
-`transitionTimingFunction.soft = cubic-bezier(0.22, 1, 0.36, 1)`,
-shadows `card` and `cta` (see the Uman `tailwind.config.ts` for exact values).
+Fonts: `display` = Frank Ruhl Libre, `sans` = Assistant, `label` = Heebo.
+`maxWidth.container = 906px`; `ease-soft = cubic-bezier(0.22,1,0.36,1)`; shadows `card`,`cta`.
+(Older dark tokens `noir/coal/bone/mute` may linger in config but are unused — ignore.)
 
-## Animation rules
+## Content
 
-Keep motion calm and identical in spirit to the brand page. Three primitives only:
+- **`src/content/copy.he.ts`** — single source of truth for ALL Hebrew copy, `as const`.
+  Components import from here. **No Hebrew strings in JSX** (an `alt=` attribute is the
+  only allowed exception). `content/copy.he.md` is the human-readable mirror.
+- Don't paraphrase client wording. Key exports: `hero, intro, bride, included,
+  cinematic, perfectFor, whyUs, closing, leadForm, footer, contact, gallery,
+  videoMoment, videos, scrollGallery(unused), meta`.
+- `contact.phone` is a **placeholder** (`+972000000000`, TODO) — swap in the real
+  phone/WhatsApp when the client provides it.
 
-1. `<Reveal>` — fade + 16px Y on viewport enter, fires once. 700ms, soft ease.
-2. `<FloatingDecor>` — slow Y ±8px loop on decorative SVGs, opacity ~0.12.
-3. `<Button>` — translateY(-2px) on hover, shadow grow. No color shift.
+## Page structure (`src/App.tsx`, reading order)
 
-Hard rules:
-- Every animated component honors `useReducedMotion()`.
-- No bounce, no scale > 1.02, no rotate.
-- `Reveal` fires once, unobserves itself. No replay on scroll-up.
-- Lists stagger at `staggerChildren: 0.08`.
+Hero → Intro → ForBride → WhatsIncluded → CinematicQuote → VideoMoment →
+PerfectFor → Gallery → WhyUs → VideoGallery → ClosingQuote → LeadForm → Footer.
 
-## RTL (Hebrew is primary)
+## Components
 
-- `<html lang="he" dir="rtl">` in `index.html`.
-- Use Tailwind **logical** utilities: `ps-*`, `pe-*`, `ms-*`, `me-*`, `start-*`, `end-*`.
-  **Do not** use `pl-*`/`pr-*`/`ml-*`/`mr-*` — they break under RTL.
-- Wrap LTR numerals/phone numbers in `<bdi>` when inside RTL paragraphs.
+- `components/layout/Section.tsx` — section wrapper. Props: `bg` (default `bg-ivory`),
+  `className`, `full`, **`decor`** (adds the gold floral backdrop). `Container.tsx` = 906px centered.
+- `components/ui/GoldDecor.tsx` — soft gold backdrop: corner glows + a delicate gold
+  quatrefoil pattern that **fades out toward the center** (radial mask) so it only frames
+  edges, never sits behind text. Toggle per-section via `<Section decor>`. Currently on
+  Intro, WhatsIncluded, Gallery, and the (custom) VideoGallery section.
+- `components/ui/Lightbox.tsx` — click-to-zoom popout for images AND videos (Esc / arrows
+  / click-out; RTL arrows). Reusable.
+- `components/ui/video-carousel.tsx` — **3D coverflow** for videos (from 21st.dev, recolored).
+  Only the centered clip plays (muted loop); sides show blurred posters. Auto-rotates,
+  pauses on hover, reduced-motion safe. Center has an **expand** icon → opens the Lightbox
+  (sound). Nav chevrons are flipped for RTL.
+- `components/ui/bento-grid.tsx` — 21st.dev (kokonutd) bento, recolored to ivory+gold;
+  status/tags/cta are optional. Used by **WhyUs** with lucide icons.
+- `components/ui/Button.tsx` (gold gradient CTA, anchor), `FoilText.tsx` (gold shimmer,
+  reduced-motion safe), `LogoBadge.tsx`.
+- `components/motion/{Reveal.tsx,variants.ts}` — `<Reveal>` (fade+Y on view, once) and
+  `<Reveal.Item>` for staggered lists (`staggerChildren: 0.08`).
+
+**21st.dev integrations** were fetched from the shadcn registry (`https://21st.dev/r/<author>/<slug>`),
+recolored to our tokens, pointed at framer-motion (not `motion/react`), and stripped of
+shadcn-only primitives (the demo `Button` needs shadcn CSS vars we don't have).
+
+## Imports / aliases
+
+Use **relative imports** (`../../lib/utils`). There is **no `@/` alias** — the editor's
+TS flags `baseUrl` as a deprecation error, so we removed it. `cn` lives at `src/lib/utils.ts`.
+
+## RTL + motion rules
+
+- `<html lang="he" dir="rtl">`. Tailwind **logical** utilities only: `ps-/pe-/ms-/me-/start-/end-`.
+  Never `pl-/pr-/ml-/mr-`.
+- Every animated component honors `useReducedMotion()` (Reveal, Button, FoilText,
+  VideoCarousel, VideoMoment, Lightbox). Keep it calm — no bounce/large scale/rotate beyond the coverflow.
+
+## Media
+
+- Source: `דף נחיתה - הפרשות חלה/` (Hebrew folder name) — 8 jpeg photos (**1536×2048**,
+  WhatsApp-compressed) + 5 mp4 (2 portrait, 3 landscape).
+- `scripts/optimize-media.mjs` → `public/images/{hero,ceremony,dance,crowd,table,wide,joy,pair}.webp`
+  at 1600px / q86 (native res; do NOT downscale below source — that caused visible blur).
+- `scripts/optimize-videos.mjs` → `public/videos/video-01..05.mp4` (H.264, faststart) + `.webp` posters.
+- Photo sharpness is capped by the 1536px sources; the full-bleed hero upscales slightly on
+  large screens. For perfect sharpness, get higher-res originals (not via WhatsApp) and re-run.
+- `public/images/logo.webp` is the brand logo (copied from the Uman project).
 
 ## Form
 
-Reuse the brand's lead pipeline. `LeadForm` POSTs to **`/api/lead`** (a Vercel Edge
-Function that proxies to `https://api.ronitbarash.site/api/website/lead`). The Ronit
-backend handles phone-based dedup across boards (including the **Challah** board),
-channel attribution, and the Monday writes — no env vars needed on our side.
-
-Form fields (from client copy): Full Name, Phone Number, Type of Event, Event Date,
-City, "How did you hear about us?". On mount, read `?ig_id=` and `?utm_source=` from
-the URL and include them in the payload. Remap field names to the backend's snake_case
-Zod keys (`fullName → name`, etc.) and translate Hebrew values to English on submit.
-State machine: `idle | submitting | success | error`, one toast per state.
-
-Local dev with the form: `npx vercel dev` (so `/api/lead` is served alongside Vite).
-Plain `npm run dev` serves the static site only — submissions 404.
-
-## Heading colors
-
-No global heading color in `src/index.css` — the base layer only sets `font-weight`
-and `line-height` on `h1–h4`. Each section picks its color explicitly:
-- Cream-background sections: `text-ink-deep` on the `<h2>`.
-- Photo/overlay sections (Hero, closing quote, form over accent/photo): `text-ivory`.
-
-Do **not** re-add a global `@apply text-ink-deep` to `h1–h4` — it bleeds brown text
-through over photos.
-
-## File-organization rules
-
-- `src/components/sections/` — one file per page block, named in reading order (Hero → Footer).
-- `src/components/ui/` — reusable atoms (Button, Card, Badge, Divider, FloatingDecor, LogoBadge).
-- `src/components/layout/` — page-level primitives (Section, Container).
-- `src/components/motion/` — animation primitives (Reveal, variants).
-- Keep each file under ~120 lines; extract sub-components when a section grows past that.
-
-## Assets
-
-Client photos/videos for Ronit live in `../inbalel-website/רונית -דף נחיתה אומן/`
-(shared brand asset folder) plus its `testimonials/` subfolder and `ronit-logo.jpeg`
-/ `logo-removebg.png`. Reuse the optimization scripts pattern from the Uman page
-(`sharp` for images, HEIC conversion) rather than committing raw HEIC/originals.
+`LeadForm` POSTs to **`/api/lead`** (Vercel Edge proxy in `api/lead.ts`) → forwards to
+`https://api.ronitbarash.site/api/website/lead` (Ronit's backend handles dedup incl. the
+**Challah** board). The endpoint is one constant — repoint if the client confirms a different
+backend (TBD). Payload built by **`src/lib/lead-payload.ts`** (`buildChallahLeadPayload`,
+unit-tested). Fields/`name`s: `fullName, phone, eventType, eventDate, city, hearAbout`.
+State machine `idle|submitting|success|error` + toast. Local form needs `npx vercel dev`
+(plain `npm run dev` 404s `/api/lead`).
 
 ## Don'ts
 
-- Don't hardcode hex colors in components.
-- Don't put copy strings inside JSX (Hebrew or English).
-- Don't change the shared palette — branding consistency across Ronit's pages depends on it.
-- Don't add a real form backend without explicit instruction (the proxy already exists).
-- Don't introduce additional animation libraries.
-- Don't use directional Tailwind utilities (`pl/pr/ml/mr`) in this RTL project.
-- Don't add a router or extra pages.
+- Don't hardcode hex in components (use tokens); don't put Hebrew in JSX (use `copy.he.ts`).
+- Don't use directional RTL utilities (`pl/pr/ml/mr`) or add a router/extra pages.
+- Don't add another animation library; don't use the `@/` alias.
+- Don't decorate with emojis or default to a generic "AI" look — the client rejected both;
+  prefer restraint, real typography, gold line-icons, whitespace.
 
-## Notes
+## Project meta
 
-- Brand: "אור הצדיק – רונית ברש" / "Or HaTzadik – Ronit Barash".
-- Sister page: `../inbalel-website` (Uman / Tu B'Av trip) — single source of brand truth for palette, fonts, and component patterns.
-- Mobile breakpoint mirrored from brand: 600px. Max container width: 906px.
+- Git: private repo **github.com/TheSuperShyy/ronit-wedding** (`main` tracks `origin`).
+- `.gitignore` excludes `node_modules`, `dist`, `.superpowers`.
+- Docs: design spec + implementation plan in `docs/superpowers/`.
 - User's email: clixteam579@gmail.com
 </content>
-</invoke>

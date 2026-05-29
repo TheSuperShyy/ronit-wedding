@@ -6,9 +6,9 @@ import { buildChallahLeadPayload } from '../../lib/lead-payload';
 import { leadForm } from '../../content/copy.he';
 
 const fieldClass =
-  'w-full rounded-xl border border-line bg-noir px-4 py-3 text-bone text-base ' +
-  'placeholder:text-mute focus:outline-none focus:border-gold focus:ring-4 focus:ring-gold/20 transition-shadow';
-const labelClass = 'block text-bone font-semibold mb-1.5 text-[15px]';
+  'w-full rounded-xl border border-line bg-ivory px-4 py-3 text-ink text-base ' +
+  'placeholder:text-ink-soft focus:outline-none focus:border-gold focus:ring-4 focus:ring-gold/20 transition-shadow';
+const labelClass = 'block text-ink font-semibold mb-1.5 text-[15px]';
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & { id: string; label: string };
 
@@ -26,7 +26,7 @@ function Field({ id, label, ...rest }: InputProps) {
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 const TOAST_TONE: Record<Exclude<Status, 'idle'>, string> = {
-  submitting: 'bg-coal text-bone border border-line',
+  submitting: 'bg-white text-ink border border-line',
   success: 'bg-emerald-700/95 text-white',
   error: 'bg-rose-800/95 text-white',
 };
@@ -65,16 +65,17 @@ export default function LeadForm() {
   const isSubmitting = status === 'submitting';
 
   return (
-    <section id="lead-form" className="relative bg-coal py-16 sm:py-20">
+    <section id="lead-form" className="relative bg-linen py-20 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-xl px-6">
         <div className="mb-9 text-center">
           <Reveal>
-            <h2 className="font-display text-4xl font-black tracking-tight text-bone sm:text-5xl">{leadForm.title}</h2>
-            <p className="mt-3 text-mute">{leadForm.subtitle}</p>
+            <div aria-hidden className="mx-auto mb-6 h-px w-16 bg-gradient-to-r from-transparent via-gold to-transparent" />
+            <h2 className="font-display text-4xl font-medium tracking-tight text-ink sm:text-5xl">{leadForm.title}</h2>
+            <p className="mt-3 text-ink-soft">{leadForm.subtitle}</p>
           </Reveal>
         </div>
         <Reveal>
-          <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-gold/25 bg-white/[0.03] p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-line bg-white p-6 shadow-[0_18px_50px_rgba(58,50,42,0.12)] sm:p-8">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field id="fullName" label={f.fullName} autoComplete="name" required />
               <Field id="phone" label={f.phone} type="tel" inputMode="tel" autoComplete="tel" required />

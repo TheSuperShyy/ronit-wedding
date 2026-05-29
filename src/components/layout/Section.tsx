@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Container from './Container';
+import GoldDecor from '../ui/GoldDecor';
 
 type Props = {
   children: ReactNode;
@@ -8,12 +9,25 @@ type Props = {
   className?: string;
   /** Render children edge-to-edge (no Container/padding). */
   full?: boolean;
+  /** Add the soft gold feminine backdrop behind the content. */
+  decor?: boolean;
 };
 
-export default function Section({ children, id, bg = 'bg-noir', className = '', full = false }: Props) {
+export default function Section({
+  children,
+  id,
+  bg = 'bg-ivory',
+  className = '',
+  full = false,
+  decor = false,
+}: Props) {
   return (
-    <section id={id} className={`relative ${bg} ${full ? '' : 'py-16 sm:py-20'} ${className}`}>
-      {full ? children : <Container>{children}</Container>}
+    <section
+      id={id}
+      className={`relative ${decor ? 'overflow-hidden' : ''} ${bg} ${full ? '' : 'py-20 sm:py-24 lg:py-32'} ${className}`}
+    >
+      {decor && <GoldDecor />}
+      {full ? children : <Container className="relative z-10">{children}</Container>}
     </section>
   );
 }

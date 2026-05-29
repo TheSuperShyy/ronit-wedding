@@ -24,8 +24,8 @@ for (const [src, name] of MAP) {
   const out = join(OUT, `${name}.webp`);
   await sharp(join(SRC, src))
     .rotate()
-    .resize({ width: 1400, withoutEnlargement: true })
-    .webp({ quality: 80 })
+    .resize({ width: 1600, withoutEnlargement: true })
+    .webp({ quality: 86 })
     .toFile(out);
   console.log('wrote', out);
 }

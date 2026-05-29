@@ -1,22 +1,35 @@
+import { Sparkles, Users, Award, Music2, HeartHandshake } from 'lucide-react';
 import Section from '../layout/Section';
 import Reveal from '../motion/Reveal';
+import { BentoGrid, type BentoItem } from '../ui/bento-grid';
 import { whyUs } from '../../content/copy.he';
 
+const ICONS = [Sparkles, Users, Award, Music2, HeartHandshake];
+
 export default function WhyUs() {
+  const items: BentoItem[] = whyUs.items.map((it, i) => {
+    const Icon = ICONS[i % ICONS.length];
+    return {
+      title: it.title,
+      description: it.desc,
+      icon: <Icon className="h-5 w-5" strokeWidth={1.6} />,
+      colSpan: i === 0 ? 2 : 1,
+    };
+  });
+
   return (
-    <Section bg="bg-coal">
+    <Section bg="bg-linen">
       <Reveal className="text-start">
         <div aria-hidden className="mb-5 h-px w-16 bg-gradient-to-l from-gold to-transparent" />
-        <div className="font-label text-[11px] uppercase tracking-[0.3em] text-gold">{whyUs.label}</div>
-        <h2 className="mt-3 font-display text-4xl font-black leading-tight tracking-tight text-bone sm:text-5xl">{whyUs.title}</h2>
+        <div className="font-label text-[11px] uppercase tracking-[0.3em] text-gold-deep sm:text-xs">
+          {whyUs.label}
+        </div>
+        <h2 className="mt-3 font-display text-4xl font-medium leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">
+          {whyUs.title}
+        </h2>
       </Reveal>
-      <Reveal as="ul" stagger className="mt-10 max-w-2xl">
-        {whyUs.items.map((it, i) => (
-          <Reveal.Item as="li" key={i} className="flex items-baseline gap-4 border-b border-line py-5 last:border-0 text-bone">
-            <span aria-hidden className="text-gold">—</span>
-            <span className="font-display text-xl font-medium tracking-tight sm:text-2xl">{it}</span>
-          </Reveal.Item>
-        ))}
+      <Reveal className="mt-10">
+        <BentoGrid items={items} />
       </Reveal>
     </Section>
   );

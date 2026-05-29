@@ -9,9 +9,9 @@
     position: relative;
   }
   body {
-    @apply bg-noir text-bone font-sans antialiased;
+    @apply bg-ivory text-ink font-sans antialiased;
     font-size: 18px;
-    line-height: 1.7;
+    line-height: 1.75;
     overflow-x: clip;
   }
   /* No global heading color — each section sets its own. */
@@ -19,8 +19,8 @@
     line-height: 1.18;
   }
   ::selection {
-    background: rgba(200, 164, 92, 0.30);
-    color: #f2ebdd;
+    background: rgba(200, 164, 92, 0.22);
+    color: #3a322a;
   }
 }
 
