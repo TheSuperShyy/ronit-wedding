@@ -1,0 +1,18 @@
+# dependencies
+node_modules
+
+# build output
+dist
+*.tsbuildinfo
+
+# brainstorm companion + screenshots (local only)
+.superpowers
+
+# env / local
+.env
+.env.*
+*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
