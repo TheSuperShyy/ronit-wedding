@@ -25,9 +25,9 @@ export default {
         line: '#e6dcc9',
       },
       fontFamily: {
-        display: ['"Frank Ruhl Libre"', 'serif'],
+        display: ['Assistant', 'system-ui', 'sans-serif'],
         sans: ['Assistant', 'system-ui', 'sans-serif'],
-        label: ['Heebo', 'system-ui', 'sans-serif'],
+        label: ['Assistant', 'system-ui', 'sans-serif'],
       },
       maxWidth: {
         container: '906px',

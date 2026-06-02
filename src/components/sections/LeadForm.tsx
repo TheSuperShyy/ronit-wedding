@@ -70,7 +70,7 @@ export default function LeadForm() {
         <div className="mb-9 text-center">
           <Reveal>
             <div aria-hidden className="mx-auto mb-6 h-px w-16 bg-gradient-to-r from-transparent via-gold to-transparent" />
-            <h2 className="font-display text-4xl font-medium tracking-tight text-ink sm:text-5xl">{leadForm.title}</h2>
+            <h2 className="font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">{leadForm.title}</h2>
             <p className="mt-3 text-ink-soft">{leadForm.subtitle}</p>
           </Reveal>
         </div>

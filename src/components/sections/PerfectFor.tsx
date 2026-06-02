@@ -12,7 +12,7 @@ export default function PerfectFor() {
       <Reveal className="text-center">
         <div aria-hidden className="mx-auto mb-5 h-px w-16 bg-gradient-to-l from-gold to-transparent" />
         <div className="font-label text-[11px] uppercase tracking-[0.3em] text-gold-deep sm:text-xs">{perfectFor.label}</div>
-        <h2 className="mt-3 font-display text-4xl font-medium leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">{perfectFor.title}</h2>
+        <h2 className="mt-3 font-display text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">{perfectFor.title}</h2>
       </Reveal>
 
       <Reveal as="ul" stagger className="mx-auto mt-14 grid max-w-3xl gap-5 sm:grid-cols-2 lg:grid-cols-3">

@@ -15,7 +15,7 @@ export default function VideoMoment() {
           <div className="font-label text-[11px] uppercase tracking-[0.3em] text-gold-deep sm:text-xs">
             {videoMoment.kicker}
           </div>
-          <h2 className="mt-3 font-display text-3xl font-medium leading-snug tracking-tight text-ink sm:text-4xl lg:text-5xl">
+          <h2 className="mt-3 font-display text-3xl font-bold leading-snug tracking-tight text-ink sm:text-4xl lg:text-5xl">
             {videoMoment.caption}
           </h2>
         </Reveal>

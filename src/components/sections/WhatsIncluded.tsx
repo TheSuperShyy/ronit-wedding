@@ -12,7 +12,7 @@ export default function WhatsIncluded() {
       <Reveal className="text-start">
         <div aria-hidden className="mb-5 h-px w-16 bg-gradient-to-l from-gold to-transparent" />
         <div className="font-label text-[11px] uppercase tracking-[0.3em] text-gold-deep sm:text-xs">{included.label}</div>
-        <h2 className="mt-3 font-display text-4xl font-medium leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">{included.title}</h2>
+        <h2 className="mt-3 font-display text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">{included.title}</h2>
       </Reveal>
 
       <div className="mt-12 grid items-stretch gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">

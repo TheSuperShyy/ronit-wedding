@@ -25,7 +25,7 @@ export default function VideoGallery() {
           <div className="font-label text-[11px] uppercase tracking-[0.3em] text-gold-deep sm:text-xs">
             {videos.label}
           </div>
-          <h2 className="mt-3 font-display text-4xl font-medium leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">
+          <h2 className="mt-3 font-display text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">
             {videos.title}
           </h2>
         </Reveal>

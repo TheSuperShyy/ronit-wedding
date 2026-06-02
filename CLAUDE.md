@@ -28,7 +28,10 @@ same lead backend — but this page has its own distinct design. Don't re-mirror
 - **Framer Motion** — reveals + the video coverflow + the lightbox. The ONLY animation lib.
 - **lucide-react** — line icons. **clsx + tailwind-merge** — the `cn()` helper.
 - **sharp** (image optimize) + **ffmpeg/ffprobe** (video optimize). **vitest** — one logic test.
-- Fonts (Google): **Frank Ruhl Libre** (display/serif headings), **Assistant** (body), **Heebo** (small labels).
+- Font (Google): **Assistant** everywhere — `display`, `sans`, and `label` all map to Assistant
+  (weights 300–800). Headings are heavy (hero `font-extrabold`, section titles `font-bold`) for the
+  modern bold look matching the sister site. (History: started on Frank Ruhl Libre serif headings;
+  client wanted the modern Assistant look from orhazadik.online, so we unified on Assistant.)
 
 ## Run
 
@@ -62,7 +65,7 @@ In `tailwind.config.ts` → `theme.extend.colors`:
 | `gold-lite` | `#e7cf9a` | CTA gradient highlight |
 | `line` | `#e6dcc9` | hairline borders |
 
-Fonts: `display` = Frank Ruhl Libre, `sans` = Assistant, `label` = Heebo.
+Fonts: `display` = `sans` = `label` = Assistant (unified). Headings get weight via Tailwind utilities.
 `maxWidth.container = 906px`; `ease-soft = cubic-bezier(0.22,1,0.36,1)`; shadows `card`,`cta`.
 (Older dark tokens `noir/coal/bone/mute` may linger in config but are unused — ignore.)
 

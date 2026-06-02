@@ -19,7 +19,7 @@ export default function ForBride() {
         <Reveal className="text-start">
           <div aria-hidden className="mb-5 h-px w-16 bg-gradient-to-l from-gold to-transparent" />
           <div className="font-label text-[11px] uppercase tracking-[0.3em] text-gold-deep sm:text-xs">{bride.kicker}</div>
-          <h2 className="mt-3 font-display text-4xl font-medium leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">{bride.title}</h2>
+          <h2 className="mt-3 font-display text-4xl font-bold leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">{bride.title}</h2>
           <p className="mt-6 text-pretty text-ink-soft lg:text-lg">{bride.body}</p>
           <p className="mt-8 font-semibold text-ink">{bride.fitsLabel}</p>
           <ul className="mt-3 flex flex-wrap gap-x-7 gap-y-2">

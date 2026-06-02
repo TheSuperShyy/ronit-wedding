@@ -58,7 +58,7 @@ export default function Hero() {
             {hero.kicker}
           </div>
           <h1
-            className="my-4 font-display text-[clamp(40px,9vw,92px)] font-medium leading-[1.02] tracking-tight text-ivory"
+            className="my-4 font-display text-[clamp(40px,9vw,92px)] font-extrabold leading-[1.02] tracking-tight text-ivory"
             style={{ animation: reduced ? undefined : 'hero-up .9s .82s both', textShadow: '0 2px 24px rgba(58,50,42,.45)' }}
           >
             {hero.titleLead}
