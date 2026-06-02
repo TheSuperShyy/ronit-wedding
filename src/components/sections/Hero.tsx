@@ -1,81 +1,118 @@
-import { useReducedMotion } from 'framer-motion';
+import type { ReactNode } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import FoilText from '../ui/FoilText';
 import Button from '../ui/Button';
 import LogoBadge from '../ui/LogoBadge';
-import { hero, meta } from '../../content/copy.he';
+import GoldDecor from '../ui/GoldDecor';
+import { SOFT_EASE } from '../motion/variants';
+import { hero, meta, gallery } from '../../content/copy.he';
+
+// Five portrait event photos, fanned into a gentle 3D arc (center forward,
+// outer cards angled back + scaled down). Outer two hide on small screens.
+const ARC = [gallery.items[1], gallery.items[2], gallery.items[5], gallery.items[6], gallery.items[7]];
+const SLOTS = [
+  { rotateY: 32, scale: 0.82, z: 1, hide: true, m: '-0.7rem' },
+  { rotateY: 17, scale: 0.92, z: 2, hide: false, m: '-0.7rem' },
+  { rotateY: 0, scale: 1, z: 3, hide: false, m: '0rem' },
+  { rotateY: -17, scale: 0.92, z: 2, hide: false, m: '-0.7rem' },
+  { rotateY: -32, scale: 0.82, z: 1, hide: true, m: '-0.7rem' },
+];
 
 export default function Hero() {
   const reduced = useReducedMotion();
-  return (
-    <section className="relative h-[100svh] min-h-[620px] overflow-hidden bg-ivory">
-      <style>{`
-        @keyframes hero-zoom { from { transform: scale(1.12); } to { transform: scale(1); } }
-        @keyframes hero-up { from { opacity:0; transform: translateY(22px); } to { opacity:1; transform: translateY(0); } }
-      `}</style>
 
-      {/* background photo — the original portrait shofar shot on mobile (fills a
-          portrait screen), and a wider establishing shot on desktop (the tall
-          shofar photo crops badly in a wide hero). */}
-      <div
-        className="absolute inset-0 bg-cover bg-[center_18%] lg:hidden"
-        style={{
-          backgroundImage: 'url(/images/hero.webp)',
-          animation: reduced ? undefined : 'hero-zoom 18s ease-out forwards',
-        }}
-      />
-      <div
-        className="absolute inset-0 hidden bg-cover bg-[center_38%] lg:block"
-        style={{
-          backgroundImage: 'url(/images/crowd.webp)',
-          animation: reduced ? undefined : 'hero-zoom 18s ease-out forwards',
-        }}
-      />
-      {/* soft legibility scrim — darkens only where text sits at the bottom */}
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{ background: 'linear-gradient(180deg, rgba(58,50,42,.30) 0%, rgba(58,50,42,0) 35%, rgba(58,50,42,.55) 100%)' }}
-      />
+  return (
+    <section className="relative flex min-h-[100svh] flex-col overflow-hidden bg-ivory">
+      <GoldDecor />
 
       {/* top bar */}
-      <div className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-6 py-5 lg:px-10">
-        <LogoBadge className="h-11 drop-shadow-[0_2px_10px_rgba(0,0,0,.4)] sm:h-14" />
-        <span className="font-label text-[11px] tracking-label text-ivory drop-shadow-[0_1px_6px_rgba(0,0,0,.5)] [writing-mode:vertical-rl]">{meta.besd}</span>
+      <div className="relative z-20 flex items-center justify-between px-6 py-5 lg:px-10">
+        <LogoBadge className="h-11 sm:h-14" />
+        <span className="font-label text-[11px] tracking-label text-gold-deep [writing-mode:vertical-rl]">{meta.besd}</span>
       </div>
 
-      {/* hero text — anchored bottom-start (right in RTL) */}
-      <div className="absolute inset-x-0 bottom-0 z-20 px-7 pb-12 text-start sm:pb-16 lg:pb-28 lg:px-10">
-        <div className="mx-auto w-full max-w-container">
+      {/* centered hero content */}
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 pb-14 pt-4 text-center">
+        <div className="mx-auto flex w-full max-w-5xl flex-col items-center">
+          {/* kicker */}
+          <Reveal>
+            <div className="flex items-center justify-center gap-3">
+              <span aria-hidden className="h-px w-10 bg-gradient-to-r from-transparent to-gold" />
+              <span className="font-label text-[11px] uppercase tracking-[0.3em] text-gold-deep sm:text-xs">{hero.kicker}</span>
+              <span aria-hidden className="h-px w-10 bg-gradient-to-l from-transparent to-gold" />
+            </div>
+          </Reveal>
+
+          {/* headline */}
+          <Reveal delay={0.08}>
+            <h1 className="mt-5 font-display text-[clamp(34px,7vw,84px)] font-extrabold leading-[1.04] tracking-tight text-ink">
+              {hero.titleLead}
+              <br />
+              <FoilText>{hero.titleFoil}</FoilText>
+            </h1>
+          </Reveal>
+
+          {/* fanned 3D photo arc */}
           <div
-            aria-hidden
-            className="mb-5 h-px w-16 bg-gradient-to-l from-gold-lite to-transparent"
-            style={{ animation: reduced ? undefined : 'hero-up .8s .6s both' }}
-          />
-          <div
-            className="font-label text-[11px] uppercase tracking-[0.3em] text-gold-lite drop-shadow-[0_1px_8px_rgba(0,0,0,.5)] sm:text-xs"
-            style={{ animation: reduced ? undefined : 'hero-up .8s .7s both' }}
+            className="mt-9 flex items-center justify-center sm:mt-12"
+            style={{ perspective: 1500 }}
           >
-            {hero.kicker}
+            {ARC.map((p, i) => {
+              const s = SLOTS[i];
+              return (
+                <motion.div
+                  key={p.src}
+                  className={`relative shrink-0 ${s.hide ? 'hidden sm:block' : ''}`}
+                  style={{
+                    zIndex: s.z,
+                    marginInline: s.m,
+                    ...(reduced ? { transform: `rotateY(${s.rotateY}deg) scale(${s.scale})` } : null),
+                  }}
+                  initial={reduced ? false : { opacity: 0, rotateY: 0, scale: 0.9, y: 30 }}
+                  animate={reduced ? undefined : { opacity: 1, rotateY: s.rotateY, scale: s.scale, y: 0 }}
+                  transition={reduced ? undefined : { duration: 0.85, delay: 0.3 + i * 0.12, ease: SOFT_EASE }}
+                >
+                  <div className="overflow-hidden rounded-2xl border border-line bg-white p-1.5 shadow-card">
+                    <img
+                      src={p.src}
+                      alt={p.alt}
+                      loading="eager"
+                      className="aspect-[3/4] w-[clamp(118px,15vw,198px)] rounded-xl object-cover"
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
-          <h1
-            className="my-4 font-display text-[clamp(40px,9vw,92px)] font-extrabold leading-[1.02] tracking-tight text-ivory"
-            style={{ animation: reduced ? undefined : 'hero-up .9s .82s both', textShadow: '0 2px 24px rgba(58,50,42,.45)' }}
-          >
-            {hero.titleLead}
-            <br />
-            <FoilText>{hero.titleFoil}</FoilText>
-          </h1>
-          <p
-            className="mb-8 max-w-md text-[15.5px] leading-relaxed text-ivory/90 drop-shadow-[0_1px_10px_rgba(0,0,0,.5)] sm:text-lg lg:max-w-lg"
-            style={{ animation: reduced ? undefined : 'hero-up .8s 1s both' }}
-          >
-            {hero.subtitle}
-          </p>
-          <div style={{ animation: reduced ? undefined : 'hero-up .8s 1.15s both' }}>
-            <Button href="#lead-form">{hero.cta}</Button>
-          </div>
+
+          {/* subtitle */}
+          <Reveal delay={0.12}>
+            <p className="mt-9 max-w-xl text-pretty text-[15.5px] leading-relaxed text-ink-soft sm:text-lg">{hero.subtitle}</p>
+          </Reveal>
+
+          {/* CTA */}
+          <Reveal delay={0.16}>
+            <div className="mt-8">
+              <Button href="#lead-form">{hero.cta}</Button>
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>
+  );
+}
+
+// Local fade-up wrapper (reuses the shared motion variants via Reveal-style props).
+function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
+  const reduced = useReducedMotion();
+  if (reduced) return <>{children}</>;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 22 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.75, ease: SOFT_EASE, delay: delay + 0.1 }}
+    >
+      {children}
+    </motion.div>
   );
 }

@@ -25,10 +25,13 @@ same lead backend — but this page has its own distinct design. Don't re-mirror
 
 - **Vite + React 18 + TypeScript** — SPA, single page, no router, anchor scroll.
 - **Tailwind CSS 3** — all tokens in `tailwind.config.ts`; avoid hardcoding hex in JSX.
-- **Framer Motion** — reveals + the video coverflow + the lightbox. The default animation lib.
-- **GSAP** — used **only** by the cinematic gate entrance overlay (`components/intro/GateIntro.tsx`);
-  its multi-stage timeline + procedural SVG is impractical in Framer Motion. Don't reach for GSAP
-  elsewhere — everything else stays Framer Motion.
+- **GSAP 3 + ScrollTrigger** + **Lenis** — the core motion system for the **cinematic redesign**
+  (the live page): smooth/momentum scroll (Lenis) wired to `ScrollTrigger.update` via `gsap.ticker`,
+  plus all reveals, parallax, line-mask rises, and the scroll-assembling gallery collage. Set up in
+  `components/redesign/Redesign.tsx` → `useRedesignScroll(ready)` (gated so it boots after the gate
+  opens). GSAP also drives the gate overlay (`components/intro/GateIntro.tsx`).
+- **Framer Motion** — now only used by `GateIntro` (`useReducedMotion`) and the older (now unused)
+  section components. Not used by the redesign.
 - **lucide-react** — line icons. **clsx + tailwind-merge** — the `cn()` helper.
 - **sharp** (image optimize) + **ffmpeg/ffprobe** (video optimize). **vitest** — one logic test.
 - Font (Google): **Assistant** everywhere — `display`, `sans`, and `label` all map to Assistant
@@ -83,16 +86,33 @@ Fonts: `display` = `sans` = `label` = Assistant (unified). Headings get weight v
 - `contact.phone` is a **placeholder** (`+972000000000`, TODO) — swap in the real
   phone/WhatsApp when the client provides it.
 
-## Page structure (`src/App.tsx`, reading order)
+## Page structure — the cinematic redesign (CURRENT, live)
 
-**GateIntro** (full-screen entrance overlay, plays once on load) →
-Hero → Intro → ForBride → WhatsIncluded → CinematicQuote → VideoMoment →
-PerfectFor → Gallery → WhyUs → VideoGallery → ClosingQuote → LeadForm → Footer.
+`src/App.tsx` renders **`GateIntro`** → **`Redesign`** (`components/redesign/Redesign.tsx`).
+App holds a `ready` flag: the gate plays first, and `onDone` flips `ready`, which boots the
+Lenis + ScrollTrigger scroll system for `#site`.
 
-`GateIntro` (`components/intro/GateIntro.tsx` + scoped `gate-intro.css`) is a GSAP gold-gate
-"tap to enter" cinematic that fades out to reveal Hero. Skipped under reduced-motion. Ported
-from the `redesign-intro/` HTML prototype (kept in-repo as the design reference). Copy lives in
-`copy.he.ts` → `introGate`.
+`Redesign` reading order (all in that one file; styling in `src/styles/redesign.css`, imported in
+`main.tsx`): **Hero** (full-bleed photo, stacked gold title, media marquee, scroll cue) → **Statement**
+→ **Bride (01)** → **Included (02)** → cinematic **PullBand** quote → **PerfectFor (03)** → **WhyUs (04)**
+→ **KeywordBand** marquee → **Gallery (05)** (desktop: GSAP scroll-assembling collage; mobile: `.gmob`
+mosaic) → **VideoFeature** → closing **PullBand** → **CtaForm** (giant CTA + lead form) → **Footer**,
+plus a custom **Cursor** and `page-grain`. All copy lives in `copy.he.ts` → `rd` (no Hebrew in JSX).
+
+The redesign was recreated from the handoff in `redesign-intro/design_handoff_challah_evening/`
+(README + `app.jsx` + `site.css` — `site.css` was copied to `src/styles/redesign.css`; `#hero`
+opacity was overridden to 1 since our gate reveals by fading itself out). **Lead form** posts to the
+real `/api/lead` via `buildChallahLeadPayload` (field `name`s match it: `fullName, phone, eventType,
+eventDate, city, hearAbout`).
+
+`GateIntro` (`components/intro/GateIntro.tsx` + scoped `gate-intro.css`) is the GSAP gold-gate
+"tap to enter" cinematic that fades out to reveal Hero; skipped under reduced-motion; on `onDone`,
+`Redesign` calls `ScrollTrigger.refresh()`. Copy in `copy.he.ts` → `introGate`.
+
+**Superseded:** the old Tailwind section components (`components/sections/*` — Hero, Intro, ForBride,
+WhatsIncluded, Gallery, etc.) and their UI deps (`Section`, `Reveal`, `Button`, `FoilText`, `GoldDecor`,
+`bento-grid`, `video-carousel`, `Lightbox`) are **no longer rendered** by `App.tsx`. They're dead code
+kept for now — safe to delete once the redesign is signed off.
 
 ## Components
 
@@ -156,8 +176,8 @@ State machine `idle|submitting|success|error` + toast. Local form needs `npx ver
 
 - Don't hardcode hex in components (use tokens); don't put Hebrew in JSX (use `copy.he.ts`).
 - Don't use directional RTL utilities (`pl/pr/ml/mr`) or add a router/extra pages.
-- Don't add another animation library (Framer Motion is the default; GSAP is allowed **only** for
-  the `GateIntro` overlay); don't use the `@/` alias.
+- Animation libs are **GSAP + ScrollTrigger + Lenis** (the redesign's motion system) and Framer Motion
+  (gate only). Don't add another; don't use the `@/` alias.
 - Don't decorate with emojis or default to a generic "AI" look — the client rejected both;
   prefer restraint, real typography, gold line-icons, whitespace.
 
