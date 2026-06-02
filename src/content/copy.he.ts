@@ -16,6 +16,16 @@ export const hero = {
   cta: '💍 תשרייני לי תאריך',
 } as const;
 
+// Cinematic "gate" entrance overlay shown on load (see GateIntro).
+export const introGate = {
+  brand: 'אור הצדיק · רונית ברש',
+  titleLead: 'ערב הפרשת חלה',
+  titleAccent: 'שלא תשכחי בחיים',
+  enter: 'הקישי כדי להיכנס',
+  enterSub: 'ל ח צ י   ע ל   ה ש ע ר',
+  aria: 'הקישי כדי להיכנס לערב הפרשת חלה',
+} as const;
+
 export const intro = {
   lead: 'יש רגעים בחיים שמגיע להם יותר…',
   more: ['יותר שמחה', 'יותר קדושה', 'יותר רגש', 'יותר חוויה'],

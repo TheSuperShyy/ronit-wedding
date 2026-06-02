@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import GateIntro from './components/intro/GateIntro';
 import Hero from './components/sections/Hero';
 import Intro from './components/sections/Intro';
 import ForBride from './components/sections/ForBride';
@@ -13,21 +15,25 @@ import LeadForm from './components/sections/LeadForm';
 import Footer from './components/sections/Footer';
 
 export default function App() {
+  const [introDone, setIntroDone] = useState(false);
   return (
-    <main className="overflow-x-clip">
-      <Hero />
-      <Intro />
-      <ForBride />
-      <WhatsIncluded />
-      <CinematicQuote />
-      <VideoMoment />
-      <PerfectFor />
-      <Gallery />
-      <WhyUs />
-      <VideoGallery />
-      <ClosingQuote />
-      <LeadForm />
-      <Footer />
-    </main>
+    <>
+      {!introDone && <GateIntro onDone={() => setIntroDone(true)} />}
+      <main className="overflow-x-clip">
+        <Hero />
+        <Intro />
+        <ForBride />
+        <WhatsIncluded />
+        <CinematicQuote />
+        <VideoMoment />
+        <PerfectFor />
+        <Gallery />
+        <WhyUs />
+        <VideoGallery />
+        <ClosingQuote />
+        <LeadForm />
+        <Footer />
+      </main>
+    </>
   );
 }

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ערב הפרשת חלה — כניסה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Frank+Ruhl+Libre:wght@300;400;500;700;900&family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="image-slot.js"></script>
+<style>
+  :root{
+    --gold:#c8a45c;
+    --gold-light:#e7cf9a;
+    --gold-bright:#fff4d8;
+    --gold-deep:#a87f38;
+    --cream:#fbf8f2;
+    --ink:#3a322a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{font-family:'Assistant','Heebo',sans-serif;background:#070a06;color:var(--cream);overflow:hidden;}
+  .serif{font-family:'Frank Ruhl Libre',serif;}
+  #stage{position:fixed;inset:0;overflow:hidden;}
+
+  /* ============ HERO (behind gate) ============ */
+  #hero{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-start;overflow:hidden;transform:scale(1.08);opacity:0;}
+  #hero .photo{position:absolute;inset:0;width:100%;height:100%;background:url(public/images/crowd.webp) center 36%/cover no-repeat;}
+  #hero image-slot{width:100%;height:100%;display:block;}
+  #hero .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,8,5,.06) 0%,rgba(10,8,5,.30) 55%,rgba(10,8,5,.72) 100%);}
+  .hero-inner{position:relative;z-index:2;padding:0 7vw;max-width:1180px;width:100%;text-align:right;}
+  .eyebrow{font-family:'Heebo',sans-serif;font-weight:400;letter-spacing:.34em;font-size:clamp(11px,1vw,15px);color:var(--gold-light);opacity:.9;margin-bottom:1.6rem;display:flex;align-items:center;gap:1rem;justify-content:flex-start;}
+  .eyebrow .rule{flex:0 0 64px;height:1px;background:linear-gradient(90deg,transparent,var(--gold));}
+  h1.hero-title{font-family:'Frank Ruhl Libre',serif;font-weight:500;color:#fff;line-height:1.02;font-size:clamp(44px,7.4vw,128px);text-shadow:0 4px 40px rgba(0,0,0,.35);}
+  h1.hero-title .accent{
+    background-image:linear-gradient(100deg,#f3dca0,#fff4d8 30%,#c8a45c 55%,#fff4d8 75%,#e7cf9a);
+    background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:foil 5s linear infinite;}
+  @keyframes foil{to{background-position:220% center;}}
+  .hero-sub{margin-top:2rem;max-width:46ch;font-size:clamp(15px,1.45vw,22px);font-weight:300;line-height:1.7;color:rgba(244,237,224,.92);}
+  .cta{margin-top:2.6rem;display:inline-flex;align-items:center;gap:.7rem;background:linear-gradient(180deg,var(--gold-light),var(--gold));color:#2a1f0e;font-weight:500;font-size:clamp(16px,1.3vw,20px);padding:1.05rem 2.4rem;border:none;border-radius:999px;cursor:pointer;box-shadow:0 12px 34px rgba(201,160,74,.35);transition:transform .25s ease, box-shadow .25s ease;}
+  .cta:hover{transform:translateY(-2px);box-shadow:0 18px 44px rgba(201,160,74,.5);}
+  .logo-badge{position:absolute;top:1.7rem;right:3vw;z-index:3;height:clamp(50px,6vw,76px);width:auto;filter:drop-shadow(0 2px 12px rgba(0,0,0,.5));}
+  .besd{position:absolute;top:2rem;left:3vw;z-index:3;writing-mode:vertical-rl;font-family:'Heebo',sans-serif;font-size:12px;letter-spacing:.3em;color:var(--cream);opacity:.9;text-shadow:0 1px 6px rgba(0,0,0,.5);}
+
+  /* ============ GATE SCENE ============ */
+  #gate{position:absolute;inset:0;z-index:50;cursor:pointer;overflow:hidden;
+    background:
+      radial-gradient(60% 50% at 50% 44%, rgba(255,196,120,.16), rgba(255,196,120,0) 70%),
+      radial-gradient(130% 110% at 50% 38%, #4a2f1f 0%, #341f23 40%, #1d1117 74%, #0d080b 100%);}
+  #scene{position:absolute;inset:0;transform-origin:50% 55%;will-change:transform,opacity;}
+
+  /* fancy wedding-night background layers */
+  .bg-glow{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:96vmin;height:96vmin;pointer-events:none;z-index:0;mix-blend-mode:screen;
+    background:radial-gradient(circle, rgba(255,214,150,.24), rgba(255,196,120,.08) 45%, rgba(255,196,120,0) 66%);}
+  #bokeh{position:absolute;inset:0;pointer-events:none;z-index:0;}
+  .bokeh{position:absolute;border-radius:50%;filter:blur(7px);mix-blend-mode:screen;
+    background:radial-gradient(circle, rgba(255,238,196,.95), rgba(255,210,140,.35) 58%, rgba(255,210,140,0) 76%);}
+  #petals{position:absolute;inset:0;pointer-events:none;z-index:1;}
+  .petal{position:absolute;width:7px;height:10px;opacity:0;filter:blur(.4px);
+    border-radius:62% 62% 60% 60% / 72% 72% 40% 40%;
+    background:linear-gradient(160deg, rgba(255,236,188,.85), rgba(206,158,76,.5));
+    box-shadow:0 0 8px rgba(255,222,160,.45);}
+
+  /* soft warm glow in the corners */
+  .foliage{position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(50% 60% at 4% 6%, rgba(200,164,92,.34), rgba(200,164,92,0) 70%),
+      radial-gradient(55% 60% at 96% 8%, rgba(200,164,92,.32), rgba(200,164,92,0) 70%),
+      radial-gradient(60% 40% at 8% 96%, rgba(200,164,92,.28), rgba(200,164,92,0) 70%),
+      radial-gradient(60% 40% at 92% 96%, rgba(200,164,92,.28), rgba(200,164,92,0) 70%);
+    mix-blend-mode:screen;}
+
+  /* site visual language: gold floret decor + candle glows + film grain */
+  .golddecor{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .golddecor .gc1{position:absolute;top:-14%;right:-12%;width:34rem;height:34rem;border-radius:50%;background:radial-gradient(circle, rgba(200,164,92,.20), transparent 70%);}
+  .golddecor .gc2{position:absolute;bottom:-14%;left:-12%;width:34rem;height:34rem;border-radius:50%;background:radial-gradient(circle, rgba(200,164,92,.16), transparent 70%);}
+  .golddecor .floret{position:absolute;inset:0;opacity:.09;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cg fill='none' stroke='%23c8a45c' stroke-width='1'%3E%3Ccircle cx='48' cy='32' r='10'/%3E%3Ccircle cx='64' cy='48' r='10'/%3E%3Ccircle cx='48' cy='64' r='10'/%3E%3Ccircle cx='32' cy='48' r='10'/%3E%3C/g%3E%3C/svg%3E");
+    background-size:96px 96px;
+    -webkit-mask-image:radial-gradient(ellipse 74% 70% at 50% 46%, transparent 30%, rgba(0,0,0,.6) 64%, #000 100%);
+            mask-image:radial-gradient(ellipse 74% 70% at 50% 46%, transparent 30%, rgba(0,0,0,.6) 64%, #000 100%);}
+  .grain{position:absolute;inset:0;z-index:6;pointer-events:none;mix-blend-mode:overlay;opacity:.13;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  /* the white light beyond the gate */
+  .portal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:0;pointer-events:none;
+    width:min(55vmin,460px);height:min(82vh,712px);}
+  .portal-light{position:absolute;inset:0;opacity:.12;
+    background:radial-gradient(116% 92% at 50% 48%,
+      rgba(255,251,243,.9) 0%,
+      rgba(255,245,222,.66) 26%,
+      rgba(247,224,168,.38) 50%,
+      rgba(222,182,112,.16) 72%,
+      rgba(200,164,92,0) 90%);
+    border-radius:48% 48% 7% 7% / 41% 41% 4% 4%;}
+
+  /* soft halo + god-rays behind the gate */
+  .halo{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);width:30vmin;height:30vmin;pointer-events:none;z-index:1;
+    background:radial-gradient(circle, rgba(255,255,255,.32) 0%, rgba(255,253,248,.14) 32%, rgba(240,242,246,.05) 54%, rgba(255,255,255,0) 72%);
+    mix-blend-mode:screen;}
+  #rays{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);width:62vmin;height:62vmin;border-radius:50%;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:.22;filter:blur(2.5px);
+    background:repeating-conic-gradient(from 0deg, rgba(255,238,192,0) 0deg 11deg, rgba(255,238,192,.12) 14deg 18deg, rgba(255,238,192,0) 21deg);
+    -webkit-mask:radial-gradient(circle, transparent 9%, #000 28%, transparent 60%);
+            mask:radial-gradient(circle, transparent 9%, #000 28%, transparent 60%);}
+
+  /* ===== the wrought-iron gate ===== */
+  .gate3d{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:min(74vmin,620px);height:min(88vh,780px);perspective:1700px;z-index:3;
+    filter:drop-shadow(0 2px 2px rgba(40,26,4,.55)) drop-shadow(0 0 6px rgba(255,238,182,.7)) drop-shadow(0 0 18px rgba(232,205,138,.4));}
+  .gframe{position:absolute;inset:0;z-index:1;}
+  .gframe svg,.leaf svg,.emblem svg{display:block;width:100%;height:100%;overflow:visible;}
+  .leaf{position:absolute;top:0;height:100%;width:42%;z-index:2;backface-visibility:hidden;}
+  .leaf.left{left:8%;transform-origin:left center;}
+  .leaf.right{right:8%;transform-origin:right center;}
+  .emblem{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);z-index:4;width:clamp(74px,12vmin,128px);height:auto;}
+  .emblem svg{height:auto;}
+
+  .knock{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);width:16vmin;height:16vmin;border-radius:50%;border:1px solid rgba(255,236,190,.32);box-shadow:0 0 24px rgba(255,236,190,.22);pointer-events:none;z-index:5;}
+
+  /* lit ground */
+  .path{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:72vmin;height:18vmin;pointer-events:none;
+    background:radial-gradient(60% 120% at 50% 0%, rgba(255,232,170,.32), rgba(255,232,170,0) 70%);}
+  .vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 110% at 50% 50%, rgba(0,0,0,0) 42%, rgba(5,8,5,.5) 80%, rgba(3,5,3,.94) 100%);}
+
+  /* title + hint */
+  .gate-head{position:absolute;left:50%;top:3.5%;transform:translateX(-50%);text-align:center;z-index:7;width:92%;pointer-events:none;}
+  .gate-head .ev{letter-spacing:.36em;font-size:clamp(11px,1.1vw,14px);color:rgba(255,236,190,.82);margin-bottom:.9rem;text-shadow:0 2px 14px rgba(0,0,0,.9);}
+  .gate-head .brandlogo{display:block;margin:0 auto 1rem;height:clamp(48px,7.2vmin,84px);width:auto;filter:drop-shadow(0 2px 14px rgba(0,0,0,.65));}
+  .gate-head h2{font-family:'Frank Ruhl Libre',serif;font-weight:500;color:#fff;font-size:clamp(28px,4.6vw,56px);line-height:1.06;text-shadow:0 3px 26px rgba(0,0,0,.92);}
+  .gate-head h2 .g{color:var(--gold-light);}
+  .enter-hint{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);text-align:center;z-index:7;pointer-events:none;}
+  .enter-hint .lbl{font-family:'Frank Ruhl Libre',serif;font-size:clamp(18px,2vw,26px);color:#fff;letter-spacing:.12em;text-shadow:0 2px 16px rgba(0,0,0,.95);}
+  .enter-hint .sub{margin-top:.5rem;font-size:12px;letter-spacing:.32em;color:rgba(255,236,190,.72);text-shadow:0 2px 10px rgba(0,0,0,.95);}
+
+  /* fireflies */
+  #fireflies{position:absolute;inset:0;z-index:6;pointer-events:none;}
+  .ff{position:absolute;border-radius:50%;background:radial-gradient(circle,#ffdfa0,#d8a64a 72%);box-shadow:0 0 8px 2px rgba(255,200,120,.5);}
+
+  /* the flash */
+  #flash{position:absolute;inset:0;z-index:70;pointer-events:none;opacity:0;
+    background:radial-gradient(circle at 50% 52%, rgba(255,252,245,1) 0%, rgba(255,247,227,.92) 34%, rgba(248,229,182,.55) 62%, rgba(238,214,148,.12) 100%);
+    mix-blend-mode:screen;}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- ===== HERO ===== -->
+  <section id="hero" data-screen-label="Hero">
+    <div class="photo"></div>
+    <img class="logo-badge" src="public/images/logo.webp" alt="אור הצדיק · רונית ברש" />
+    <span class="besd">בס״ד</span>
+    <div class="hero-inner">
+      <div class="eyebrow"><span class="rule"></span><span>אור הצדיק · רונית ברש</span></div>
+      <h1 class="hero-title serif">ערב הפרשת חלה<br /><span class="accent">שלא תשכחי בחיים</span></h1>
+      <p class="hero-sub">רגע אחד לעצור, להתרגש ולהתפלל — ערב נשי יוקרתי, עטוף באור, במוזיקה ובשמחה ✨</p>
+      <a class="cta" href="#">💍 תשרייני לי תאריך</a>
+    </div>
+  </section>
+
+  <!-- ===== GATE SCENE ===== -->
+  <div id="gate" role="button" tabindex="0" aria-label="הקישי כדי להיכנס">
+    <div id="scene">
+      <div class="bg-glow" id="bgGlow"></div>
+      <div class="golddecor"><div class="gc1"></div><div class="gc2"></div><div class="floret"></div></div>
+      <div id="bokeh"></div>
+      <div id="petals"></div>
+      <div class="foliage"></div>
+
+      <!-- gold gradient definition (shared) -->
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+        <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fff6da"/>
+          <stop offset="0.4" stop-color="#f0d796"/>
+          <stop offset="1" stop-color="#cba24a"/>
+        </linearGradient>
+      </defs></svg>
+
+      <div class="portal" id="portal"><div class="portal-light" id="lightBehind"></div></div>
+      <div id="rays"></div>
+      <div class="halo" id="halo"></div>
+
+      <div class="gate3d" id="gate3d">
+        <div class="gframe" id="gframe"></div>
+        <div class="leaf left" id="leafL"></div>
+        <div class="leaf right" id="leafR"></div>
+        <div class="emblem" id="emblem">
+          <svg viewBox="0 0 150 96" fill="none" stroke="#ecd190" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="60" cy="54" r="30"/>
+            <circle cx="90" cy="54" r="30"/>
+            <path d="M75 8 l3.4 7 7 3.4 -7 3.4 -3.4 7 -3.4-7 -7-3.4 7-3.4z" fill="#f2d99a" stroke="none"/>
+          </svg>
+        </div>
+        <div class="knock" id="knock"></div>
+      </div>
+
+      <div class="path"></div>
+      <div class="vignette"></div>
+
+      <div class="gate-head">
+        <div class="ev">אור הצדיק · רונית ברש</div>
+        <h2 class="serif">ערב הפרשת חלה<br /><span class="g">שלא תשכחי בחיים</span></h2>
+      </div>
+      <div class="enter-hint" id="hint">
+        <div class="lbl serif">הקישי כדי להיכנס</div>
+        <div class="sub">ל ח צ י   ע ל   ה ש ע ר</div>
+      </div>
+
+      <div id="fireflies"></div>
+      <div class="grain"></div>
+    </div>
+    <div id="flash"></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  const gate=document.getElementById('gate');
+  const scene=document.getElementById('scene');
+  const flash=document.getElementById('flash');
+  const hero=document.getElementById('hero');
+  const halo=document.getElementById('halo');
+  const knock=document.getElementById('knock');
+  const emblem=document.getElementById('emblem');
+  const head=document.querySelector('.gate-head');
+  const hint=document.getElementById('hint');
+  const ffWrap=document.getElementById('fireflies');
+  const lightBehind=document.getElementById('lightBehind');
+  const leafL=document.getElementById('leafL');
+  const leafR=document.getElementById('leafR');
+
+  /* ---------- iron-gate scrollwork generator ---------- */
+  // anchored fiddlehead scroll → smooth curl path
+  function curl(ax,ay,angDeg,size,dir){
+    const ba=angDeg*Math.PI/180, steps=38, turns=1.3;
+    const cx=ax+Math.cos(ba)*size, cy=ay+Math.sin(ba)*size, pts=[];
+    for(let i=0;i<=steps;i++){
+      const t=i/steps, a=ba+Math.PI+dir*t*turns*2*Math.PI, r=size*(1-t);
+      pts.push((cx+Math.cos(a)*r).toFixed(1)+','+(cy+Math.sin(a)*r).toFixed(1));
+    }
+    return '<path d="M'+pts.join(' L')+'"/>';
+  }
+  const P=(d,w)=>'<path d="'+d+'" stroke-width="'+(w||2.4)+'"/>';
+  const C=(x,y,r)=>'<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(r||4)+'" fill="#f2d99a" stroke="none"/>';
+
+  function buildLeaf(side){
+    const W=252,H=760, right=(side==='right');
+    const fx=x=> right? x : (W-x);
+    const fd=d=> right? d : -d;
+    let s='';
+    // arched top rail (high at seam x≈4, lower at hinge x≈248)
+    s+=P('M'+fx(4)+',150 Q'+fx(126)+',114 '+fx(248)+',236',3.4);
+    s+=P('M'+fx(16)+',168 Q'+fx(126)+',138 '+fx(236)+',244',1.8);
+    // straight spring-line rail where the bars begin
+    s+=P('M'+fx(4)+',300 L'+fx(248)+',300',3);
+    // edges + base rail
+    s+=P('M'+fx(4)+',150 L'+fx(4)+',706',3.4);
+    s+=P('M'+fx(248)+',236 L'+fx(248)+',706',3.4);
+    s+=P('M'+fx(4)+',706 L'+fx(248)+',706',3.4);
+    // scrollwork filling the arched lunette
+    for(let i=0;i<4;i++){
+      const t=(i+0.5)/4, x=10+t*232;
+      s+='<g stroke-width="2">'+curl(fx(x),300,-90,22,fd(i%2?1:-1))+'</g>';
+    }
+    // small rings dotted along the arch rail
+    for(let i=0;i<6;i++){ const t=i/5; s+=C(fx(4+t*244),150+t*86,3.4); }
+    // vertical bars
+    const n=8;
+    for(let i=0;i<n;i++){
+      const bx=18+i*((234-18)/(n-1));
+      s+=P('M'+fx(bx)+',300 L'+fx(bx)+',660',2.8);
+    }
+    // bottom scroll frieze (facing curls)
+    for(let i=0;i<3;i++){
+      const gx=40+i*86;
+      s+='<g stroke-width="2.2">'+curl(fx(gx),660,-90,16,fd(1))+curl(fx(gx+34),660,-90,16,fd(-1))+'</g>';
+    }
+    return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" fill="none" stroke="#ecd190" stroke-linecap="round" stroke-linejoin="round">'+s+'</svg>';
+  }
+
+  function buildFrame(){
+    const W=600,H=760; let s='';
+    // grand top arch spanning both posts
+    s+=P('M48,252 Q300,86 552,252',4);
+    s+=P('M48,252 Q300,114 552,252',2);
+    // rings along the arch
+    for(let i=0;i<=10;i++){
+      const t=i/10, mt=1-t;
+      const x=mt*mt*48+2*mt*t*300+t*t*552;
+      const y=mt*mt*252+2*mt*t*86+t*t*252;
+      s+=C(x,y-2,3.6);
+    }
+    // crown palmette above the arch peak
+    s+=P('M300,150 L300,96',2);
+    s+=P('M300,96 C282,78 282,52 300,34 C318,52 318,78 300,96',2.4);
+    s+=P('M300,128 C262,118 246,80 262,50',2);
+    s+=P('M300,128 C338,118 354,80 338,50',2);
+    s+='<g stroke-width="1.8">'+curl(262,50,150,12,1)+curl(338,50,30,12,-1)+'</g>';
+    s+=C(300,30,4);
+    // side posts with finials
+    function post(cx){
+      let t='';
+      t+=P('M'+(cx-12)+',252 L'+(cx-12)+',720',3);
+      t+=P('M'+(cx+12)+',252 L'+(cx+12)+',720',3);
+      for(let y=300;y<=690;y+=78){ t+=P('M'+(cx-12)+','+y+' L'+(cx+12)+','+y,1.4); }
+      // finial
+      t+=P('M'+cx+',252 L'+cx+',214',2.4);
+      t+=P('M'+(cx-14)+',214 C'+(cx-14)+',194 '+(cx+14)+',194 '+(cx+14)+',214',2);
+      t+=P('M'+cx+',214 L'+cx+',188',2);
+      t+=P('M'+(cx-9)+',176 L'+cx+',188 L'+(cx+9)+',176 L'+cx+',164 Z',1.8);
+      t+='<g stroke-width="1.5">'+curl(cx-13,198,180,10,1)+curl(cx+13,198,0,10,-1)+'</g>';
+      return t;
+    }
+    s+=post(30);
+    s+=post(570);
+    // base ground rail
+    s+=P('M30,720 L570,720',3);
+    return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" fill="none" stroke="#ecd190" stroke-linecap="round" stroke-linejoin="round">'+s+'</svg>';
+  }
+
+  leafL.innerHTML=buildLeaf('left');
+  leafR.innerHTML=buildLeaf('right');
+  document.getElementById('gframe').innerHTML=buildFrame();
+
+  /* ---------- embers (warm sparks rising, matching the site) ---------- */
+  const flies=[];
+  for(let i=0;i<18;i++){
+    const f=document.createElement('div'); f.className='ff';
+    const sz=3+Math.random()*3;
+    f.style.width=f.style.height=sz+'px';
+    f.style.left=Math.random()*100+'%';
+    ffWrap.appendChild(f); flies.push(f);
+    (function(f){
+      const rise=()=>{
+        gsap.set(f,{x:0,y:0,top:(78+Math.random()*26)+'%',opacity:0,scale:.6+Math.random()*.8});
+        const dur=7+Math.random()*5;
+        gsap.to(f,{y:-(innerHeight*0.66+Math.random()*120),x:(Math.random()*2-1)*60,duration:dur,ease:'sine.inOut',onComplete:rise});
+        gsap.to(f,{opacity:.85,duration:1.5,delay:.2});
+        gsap.to(f,{opacity:0,duration:1.9,delay:Math.max(.6,dur-2)});
+      };
+      gsap.delayedCall(Math.random()*7, rise);
+    })(f);
+  }
+
+  /* ---------- bokeh ---------- */
+  const bokehWrap=document.getElementById('bokeh');
+  for(let i=0;i<18;i++){
+    const b=document.createElement('div'); b.className='bokeh';
+    const sz=18+Math.random()*70;
+    b.style.width=b.style.height=sz+'px';
+    b.style.left=Math.random()*100+'%'; b.style.top=Math.random()*100+'%';
+    bokehWrap.appendChild(b);
+    gsap.set(b,{opacity:.07+Math.random()*.2});
+    gsap.to(b,{opacity:.28+Math.random()*.32,duration:3.5+Math.random()*4,repeat:-1,yoyo:true,ease:'sine.inOut',delay:Math.random()*4});
+    gsap.to(b,{x:(Math.random()*2-1)*70,y:(Math.random()*2-1)*52,duration:14+Math.random()*10,repeat:-1,yoyo:true,ease:'sine.inOut',delay:Math.random()*5});
+  }
+
+  /* ---------- petals ---------- */
+  const petalWrap=document.getElementById('petals');
+  for(let i=0;i<13;i++){
+    const p=document.createElement('div'); p.className='petal';
+    petalWrap.appendChild(p);
+    (function(p){
+      const fall=()=>{
+        gsap.set(p,{left:Math.random()*100+'%',top:'-6%',opacity:0,rotation:Math.random()*360,scale:.7+Math.random()*.7});
+        const dur=15+Math.random()*11;
+        gsap.to(p,{top:'106%',duration:dur,ease:'none',onComplete:fall});
+        gsap.to(p,{x:(Math.random()*2-1)*80,duration:dur/2,repeat:1,yoyo:true,ease:'sine.inOut'});
+        gsap.to(p,{rotation:'+=160',duration:dur,ease:'none'});
+        gsap.to(p,{opacity:.6,duration:2.4,delay:.3});
+        gsap.to(p,{opacity:0,duration:2.6,delay:Math.max(.5,dur-3)});
+      };
+      gsap.delayedCall(Math.random()*12, fall);
+    })(p);
+  }
+
+  /* ---------- idle invitation ---------- */
+  const bgGlow=document.getElementById('bgGlow');
+  const rays=document.getElementById('rays');
+  gsap.to(halo,{scale:1.06,opacity:.46,duration:3.8,repeat:-1,yoyo:true,ease:'sine.inOut'});
+  gsap.to(emblem,{scale:1.04,duration:3.8,repeat:-1,yoyo:true,ease:'sine.inOut',transformOrigin:'50% 50%'});
+  gsap.fromTo(knock,{scale:.9,opacity:.35},{scale:1.5,opacity:0,duration:4.4,repeat:-1,ease:'sine.out'});
+  gsap.from(head,{opacity:0,y:16,duration:1.8,delay:.4,ease:'power2.out'});
+  gsap.fromTo(hint,{opacity:0},{opacity:1,duration:1.6,delay:1,ease:'power2.out'});
+  gsap.to('.enter-hint .lbl',{opacity:.6,duration:2.2,repeat:-1,yoyo:true,ease:'sine.inOut',delay:2.4});
+
+  /* continuous, slow "alive" motion */
+  gsap.to(bgGlow,{scale:1.07,opacity:.8,duration:7.5,repeat:-1,yoyo:true,ease:'sine.inOut'});
+  gsap.to(rays,{rotation:360,duration:130,repeat:-1,ease:'none'});
+  gsap.to(rays,{opacity:.3,duration:6,repeat:-1,yoyo:true,ease:'sine.inOut'});
+  gsap.to(scene,{scale:1.012,duration:9,repeat:-1,yoyo:true,ease:'sine.inOut'});
+  gsap.to('#gate3d',{filter:'drop-shadow(0 2px 2px rgba(40,26,4,.5)) drop-shadow(0 0 7px rgba(255,242,200,.85)) drop-shadow(0 0 20px rgba(232,205,138,.5))',duration:3.4,repeat:-1,yoyo:true,ease:'sine.inOut'});
+
+  /* ---------- OPEN: swing the gate, fly through the white light ---------- */
+  let opened=false;
+  function enter(){
+    if(opened) return; opened=true;
+    gate.style.cursor='default';
+    gsap.killTweensOf([scene,halo,emblem,knock,bgGlow,rays,'#gate3d','.enter-hint .lbl']);
+    gsap.killTweensOf(flies);
+    const tl=gsap.timeline({defaults:{ease:'power2.inOut'}});
+
+    // 1 — the rings glow, the invitation clears
+    tl.to(emblem,{scale:1.4,duration:1.1,ease:'power2.out',transformOrigin:'50% 50%'},0)
+      .to(halo,{scale:1.3,opacity:.7,duration:1.3,ease:'power2.out'},0)
+      .to([head,hint,knock],{opacity:0,duration:1.0,ease:'power1.inOut'},0.2)
+      .to(emblem,{opacity:0,scale:.5,duration:.9,ease:'power2.in'},0.95);
+
+    // 2 — the gate swings open with weight, white light spills through
+    tl.to(leafR,{rotateY:92,duration:2.5,ease:'power3.inOut'},0.9)
+      .to(leafL,{rotateY:-92,duration:2.5,ease:'power3.inOut'},0.9)
+      .to(lightBehind,{opacity:1,scale:1.12,duration:2.4,ease:'power2.in'},1.2)
+      .to(halo,{opacity:.8,scale:1.5,duration:2.5,ease:'power2.in'},1.2);
+
+    flies.forEach(f=>{
+      tl.to(f,{x:(Math.random()*2-1)*innerWidth*.5,y:(Math.random()*2-1)*innerHeight*.5,scale:1.8,opacity:0,duration:2.6,ease:'power1.in'},1.6);
+    });
+
+    // 3 — the camera glides through the open gate
+    tl.to(scene,{scale:9,duration:2.8,ease:'expo.in'},2.9);
+    // 4 — a soft warm bloom
+    tl.to(flash,{opacity:.9,duration:1.3,ease:'power2.in'},4.7);
+    // 5 — the hero settles in
+    tl.add(()=>{ gate.style.pointerEvents='none'; },5.8)
+      .to(hero,{opacity:1,scale:1,duration:2.6,ease:'expo.out'},5.3)
+      .set(gate,{visibility:'hidden'},5.9)
+      .to(flash,{opacity:0,duration:1.7,ease:'power2.out'},6.0);
+    tl.from('.hero-inner > *',{opacity:0,y:34,duration:1.4,stagger:.16,ease:'power3.out'},6.3)
+      .from('.logo-badge, .besd',{opacity:0,duration:1.3,ease:'power2.out'},6.3);
+  }
+  gate.addEventListener('click',enter);
+  gate.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();enter();} });
+})();
+</script>
+</body>
+</html>

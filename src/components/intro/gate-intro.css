@@ -1,0 +1,371 @@
+/*
+ * Cinematic "gate" entrance overlay. Ported from the redesign-intro prototype
+ * and fully SCOPED under `.gate-intro` so it never leaks global styles into the
+ * Tailwind app. All animation is driven by GSAP in GateIntro.tsx; this file is
+ * purely the static scene + decorative layers. Colors mirror the ivory+gold
+ * design tokens (gold #c8a45c, gold-light #e7cf9a, ink #3a322a).
+ */
+
+.gate-intro {
+  --gold: #c8a45c;
+  --gold-light: #e7cf9a;
+  --gold-bright: #fff4d8;
+  --gold-deep: #a87f38;
+  --cream: #fbf8f2;
+
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  cursor: pointer;
+  color: var(--cream);
+  font-family: 'Assistant', 'Heebo', sans-serif;
+  background:
+    radial-gradient(60% 50% at 50% 44%, rgba(255, 196, 120, 0.16), rgba(255, 196, 120, 0) 70%),
+    radial-gradient(130% 110% at 50% 38%, #4a2f1f 0%, #341f23 40%, #1d1117 74%, #0d080b 100%);
+}
+
+.gate-intro .gi-scene {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 55%;
+  will-change: transform, opacity;
+}
+
+/* wedding-night background layers */
+.gate-intro .gi-bg-glow {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  width: 96vmin;
+  height: 96vmin;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(255, 214, 150, 0.24), rgba(255, 196, 120, 0.08) 45%, rgba(255, 196, 120, 0) 66%);
+}
+
+.gate-intro .gi-bokeh {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.gate-intro .bokeh {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(7px);
+  mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(255, 238, 196, 0.95), rgba(255, 210, 140, 0.35) 58%, rgba(255, 210, 140, 0) 76%);
+}
+
+.gate-intro .gi-petals {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.gate-intro .petal {
+  position: absolute;
+  width: 7px;
+  height: 10px;
+  opacity: 0;
+  filter: blur(0.4px);
+  border-radius: 62% 62% 60% 60% / 72% 72% 40% 40%;
+  background: linear-gradient(160deg, rgba(255, 236, 188, 0.85), rgba(206, 158, 76, 0.5));
+  box-shadow: 0 0 8px rgba(255, 222, 160, 0.45);
+}
+
+/* soft warm glow in the corners */
+.gate-intro .foliage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(50% 60% at 4% 6%, rgba(200, 164, 92, 0.34), rgba(200, 164, 92, 0) 70%),
+    radial-gradient(55% 60% at 96% 8%, rgba(200, 164, 92, 0.32), rgba(200, 164, 92, 0) 70%),
+    radial-gradient(60% 40% at 8% 96%, rgba(200, 164, 92, 0.28), rgba(200, 164, 92, 0) 70%),
+    radial-gradient(60% 40% at 92% 96%, rgba(200, 164, 92, 0.28), rgba(200, 164, 92, 0) 70%);
+  mix-blend-mode: screen;
+}
+
+/* gold floret decor (matches the site's GoldDecor language) */
+.gate-intro .golddecor {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.gate-intro .golddecor .gc1 {
+  position: absolute;
+  top: -14%;
+  right: -12%;
+  width: 34rem;
+  height: 34rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200, 164, 92, 0.2), transparent 70%);
+}
+.gate-intro .golddecor .gc2 {
+  position: absolute;
+  bottom: -14%;
+  left: -12%;
+  width: 34rem;
+  height: 34rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200, 164, 92, 0.16), transparent 70%);
+}
+.gate-intro .golddecor .floret {
+  position: absolute;
+  inset: 0;
+  opacity: 0.09;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cg fill='none' stroke='%23c8a45c' stroke-width='1'%3E%3Ccircle cx='48' cy='32' r='10'/%3E%3Ccircle cx='64' cy='48' r='10'/%3E%3Ccircle cx='48' cy='64' r='10'/%3E%3Ccircle cx='32' cy='48' r='10'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 96px 96px;
+  -webkit-mask-image: radial-gradient(ellipse 74% 70% at 50% 46%, transparent 30%, rgba(0, 0, 0, 0.6) 64%, #000 100%);
+  mask-image: radial-gradient(ellipse 74% 70% at 50% 46%, transparent 30%, rgba(0, 0, 0, 0.6) 64%, #000 100%);
+}
+
+.gate-intro .grain {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.13;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* the white light beyond the gate */
+.gate-intro .gi-portal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+  width: min(73vmin, 820px);
+  height: 90vh;
+}
+.gate-intro .gi-portal-light {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  will-change: transform, opacity;
+  background: radial-gradient(116% 92% at 50% 48%,
+    rgba(255, 251, 243, 0.9) 0%,
+    rgba(255, 245, 222, 0.66) 26%,
+    rgba(247, 224, 168, 0.38) 50%,
+    rgba(222, 182, 112, 0.16) 72%,
+    rgba(200, 164, 92, 0) 90%);
+  border-radius: 48% 48% 7% 7% / 41% 41% 4% 4%;
+}
+
+/* soft halo + god-rays behind the gate */
+.gate-intro .gi-halo {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  width: 40vmin;
+  height: 40vmin;
+  pointer-events: none;
+  z-index: 1;
+  /* warm gold aura behind the emblem (replaces the old white glow) */
+  background: radial-gradient(circle, rgba(255, 226, 168, 0.3) 0%, rgba(240, 205, 140, 0.12) 36%, rgba(200, 164, 92, 0.04) 56%, rgba(200, 164, 92, 0) 72%);
+  mix-blend-mode: screen;
+}
+.gate-intro .gi-rays {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  width: 82vmin;
+  height: 82vmin;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.22;
+  filter: blur(2.5px);
+  background: repeating-conic-gradient(from 0deg, rgba(255, 238, 192, 0) 0deg 11deg, rgba(255, 238, 192, 0.12) 14deg 18deg, rgba(255, 238, 192, 0) 21deg);
+  -webkit-mask: radial-gradient(circle, transparent 9%, #000 28%, transparent 60%);
+  mask: radial-gradient(circle, transparent 9%, #000 28%, transparent 60%);
+}
+
+/* the wrought-iron gate */
+.gate-intro .gi-gate3d {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(98vmin, 1100px);
+  height: 96vh;
+  perspective: 1700px;
+  z-index: 3;
+  filter: drop-shadow(0 2px 2px rgba(40, 26, 4, 0.55)) drop-shadow(0 0 6px rgba(255, 238, 182, 0.7)) drop-shadow(0 0 18px rgba(232, 205, 138, 0.4));
+}
+.gate-intro .gi-gframe {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.gate-intro .gi-gframe svg,
+.gate-intro .gi-leaf svg,
+.gate-intro .gi-emblem svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.gate-intro .gi-leaf {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 42%;
+  z-index: 2;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+.gate-intro .gi-leaf-left {
+  left: 8%;
+  transform-origin: left center;
+}
+.gate-intro .gi-leaf-right {
+  right: 8%;
+  transform-origin: right center;
+}
+.gate-intro .gi-emblem {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  width: clamp(96px, 16vmin, 170px);
+  height: auto;
+}
+.gate-intro .gi-emblem svg {
+  height: auto;
+}
+.gate-intro .gi-knock {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  width: 21vmin;
+  height: 21vmin;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 236, 190, 0.32);
+  box-shadow: 0 0 24px rgba(255, 236, 190, 0.22);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* lit ground */
+.gate-intro .path {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 72vmin;
+  height: 18vmin;
+  pointer-events: none;
+  background: radial-gradient(60% 120% at 50% 0%, rgba(255, 232, 170, 0.32), rgba(255, 232, 170, 0) 70%);
+}
+.gate-intro .vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 110% at 50% 50%, rgba(0, 0, 0, 0) 42%, rgba(5, 8, 5, 0.5) 80%, rgba(3, 5, 3, 0.94) 100%);
+}
+
+/* title + hint */
+.gate-intro .gi-gate-head {
+  position: absolute;
+  left: 50%;
+  top: 3.5%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 7;
+  width: 92%;
+  pointer-events: none;
+}
+.gate-intro .gi-gate-head .ev {
+  letter-spacing: 0.36em;
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: rgba(255, 236, 190, 0.82);
+  margin-bottom: 0.9rem;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
+}
+.gate-intro .gi-gate-head h2 {
+  font-family: 'Assistant', sans-serif;
+  font-weight: 800;
+  color: #fff;
+  font-size: clamp(28px, 4.6vw, 56px);
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  text-shadow: 0 3px 26px rgba(0, 0, 0, 0.92);
+}
+.gate-intro .gi-gate-head h2 .g {
+  color: var(--gold-light);
+}
+.gate-intro .gi-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 4%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 7;
+  pointer-events: none;
+}
+.gate-intro .gi-hint .lbl {
+  font-family: 'Assistant', sans-serif;
+  font-weight: 600;
+  font-size: clamp(18px, 2vw, 26px);
+  color: #fff;
+  letter-spacing: 0.12em;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.95);
+}
+.gate-intro .gi-hint .sub {
+  margin-top: 0.5rem;
+  font-size: 12px;
+  letter-spacing: 0.32em;
+  color: rgba(255, 236, 190, 0.72);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
+}
+
+/* fireflies / embers */
+.gate-intro .gi-fireflies {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+.gate-intro .ff {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffdfa0, #d8a64a 72%);
+  box-shadow: 0 0 8px 2px rgba(255, 200, 120, 0.5);
+}
+
+/* the flash */
+.gate-intro .gi-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0;
+  /* blinding pure-white flood for the zoom-through moment */
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #ffffff 58%, rgba(255, 255, 255, 0.55) 82%, rgba(255, 255, 255, 0) 100%);
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+
+/* phones: drop the full-screen grain blend-layer (one fewer composited pass) */
+@media (max-width: 640px) {
+  .gate-intro .grain {
+    display: none;
+  }
+}
