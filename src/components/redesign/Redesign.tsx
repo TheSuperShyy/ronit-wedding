@@ -35,16 +35,34 @@ function Media({ src, alt, video = false, ambient = false, pop = true, className
     if (!ambient) return;
     const v = ref.current;
     if (!v) return;
-    v.muted = true; // ensure the property is set so autoplay is allowed
-    const play = () => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
-    if (v.readyState >= 2) play();
-    else v.addEventListener('loadeddata', play, { once: true });
+    v.muted = true; // property + attribute: mobile checks both for muted autoplay
+    v.setAttribute('muted', '');
+    let settled = false;
+    const removeGesture = () => {
+      document.removeEventListener('pointerdown', onGesture);
+      document.removeEventListener('touchstart', onGesture);
+      document.removeEventListener('keydown', onGesture);
+    };
+    const tryPlay = () => {
+      v.muted = true;
+      const p = v.play();
+      if (p && p.then) p.then(() => { settled = true; removeGesture(); }).catch(() => { /* blocked — wait for a gesture */ });
+    };
+    const onGesture = () => { if (!settled) tryPlay(); };
+    // try immediately (and once data arrives); mobile usually blocks until the
+    // first user interaction, so also play on the next tap/scroll/key
+    if (v.readyState >= 2) tryPlay();
+    else v.addEventListener('loadeddata', tryPlay, { once: true });
+    document.addEventListener('pointerdown', onGesture, { passive: true });
+    document.addEventListener('touchstart', onGesture, { passive: true });
+    document.addEventListener('keydown', onGesture);
+    return removeGesture;
   }, [ambient]);
 
   const data: Record<string, string> = { 'data-type': video ? 'video' : 'image', 'data-src': video ? mp4 : src };
   if (video) data['data-poster'] = src;
   if (pop) data['data-media'] = '';
-  if (video && !ambient) data['data-hover'] = ''; // floating hover-preview target
+  if (!ambient) data['data-hover'] = ''; // floating hover-preview target (photos + non-ambient videos)
 
   if (video && ambient) {
     return <video ref={ref} className={className} src={mp4} poster={src} muted loop playsInline autoPlay preload="metadata" aria-label={alt} disablePictureInPicture {...data} />;
@@ -73,7 +91,7 @@ function ViewLink({ href = '#lead-form', label }: { href?: string; label: string
   );
 }
 
-function Hero() {
+function Hero({ revealed }: { revealed: boolean }) {
   const down = () => {
     const t = document.querySelector('#site .after-hero') as HTMLElement | null;
     if (!t) return;
@@ -82,7 +100,7 @@ function Hero() {
     else window.scrollTo({ top: t.offsetTop, behavior: 'smooth' });
   };
   return (
-    <section id="hero" className="eh" data-screen-label="Hero">
+    <section id="hero" className={'eh' + (revealed ? ' eh-in' : '')} data-screen-label="Hero">
       <div className="hero-top">
         <img className="logo-badge" src="/images/logo.webp" alt="אור הצדיק · רונית ברש" />
         <span className="besd">{meta.besd}</span>
@@ -210,7 +228,9 @@ function WhyUs() {
 }
 
 function KeywordBand() {
-  const items = rd.keywords.concat(rd.keywords);
+  // repeat the set enough times that one half of the track always exceeds the
+  // viewport (the translateX(-50%) loop is only seamless when one half >= screen)
+  const items = Array.from({ length: 6 }, () => rd.keywords).flat();
   return (
     <section className="kwband" aria-hidden="true">
       <div className="kwtrack">{items.map((k, i) => (<div className="kw" key={i}><span>{k}</span><span className="st" /></div>))}</div>
@@ -218,8 +238,10 @@ function KeywordBand() {
   );
 }
 
+// Mosaic video tile (mobile gallery): plays inline (ambient) since there is no
+// hover-preview on touch. Tapping still pops it out with sound.
 function VTile({ poster }: { poster: string }) {
-  return (<div className="tile"><Media src={poster} alt="רגע חי מהערב" video /><div className="ov" /><span className="vbadge">{rd.video}</span><div className="play"><span className="pb"><PlayIcon /></span></div></div>);
+  return (<div className="tile"><Media src={poster} alt="רגע חי מהערב" video ambient /><div className="ov" /><span className="vbadge">{rd.video}</span></div>);
 }
 function PTile({ src, alt, cls }: { src: string; alt: string; cls?: string }) {
   return (<div className={'tile ' + (cls || '')}><Media src={src} alt={alt} /><div className="ov" /></div>);
@@ -239,7 +261,7 @@ function Gallery() {
             <PTile src="/images/wide.webp" alt="רונית ברש מנחה" cls="t-c" />
             <VTile poster="/videos/video-03.webp" />
             <PTile src="/images/joy.webp" alt="שמחה וכפיים" cls="t-c" />
-            <VTile poster="/videos/video-05.webp" />
+            <VTile poster="/videos/video-04.webp" />
           </div>
         </div>
       </section>
@@ -344,15 +366,16 @@ function Footer() {
 type Pop = { type: 'image' | 'video'; src: string; poster?: string };
 
 /**
- * Media interactions: on a fine pointer, hovering a video tile shows a floating
- * muted preview window that follows the cursor; clicking any photo or video tile
- * opens it in a pop-out lightbox (video with sound + controls).
+ * Media interactions: on a fine pointer, hovering a photo or video tile shows a
+ * floating preview window that follows the cursor (videos play muted); clicking
+ * any photo or video tile opens it in a pop-out lightbox (video with sound).
  */
 function MediaFX() {
-  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const [preview, setPreview] = useState<{ type: 'image' | 'video'; src: string } | null>(null);
   const [pop, setPop] = useState<Pop | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const previewVidRef = useRef<HTMLVideoElement>(null);
+  const popVidRef = useRef<HTMLVideoElement>(null);
   const fine = typeof window !== 'undefined' && window.matchMedia('(hover:hover) and (pointer:fine)').matches;
 
   // floating hover-preview follows the cursor; shows the hovered video muted
@@ -368,12 +391,12 @@ function MediaFX() {
     };
     const over = (e: Event) => {
       const t = (e.target as HTMLElement).closest?.('[data-hover]') as HTMLElement | null;
-      if (t) setPreviewSrc(t.getAttribute('data-src'));
+      if (t) setPreview({ type: t.getAttribute('data-type') === 'video' ? 'video' : 'image', src: t.getAttribute('data-src') || '' });
     };
     const out = (e: Event) => {
       const from = (e.target as HTMLElement).closest?.('[data-hover]');
       const to = (e as MouseEvent).relatedTarget as HTMLElement | null;
-      if (from && !(to && to.closest && to.closest('[data-hover]'))) setPreviewSrc(null);
+      if (from && !(to && to.closest && to.closest('[data-hover]'))) setPreview(null);
     };
     window.addEventListener('mousemove', move);
     document.addEventListener('mouseover', over);
@@ -387,14 +410,15 @@ function MediaFX() {
     };
   }, [fine]);
 
-  // (re)play the preview video whenever the hovered source changes
+  // (re)play the preview video whenever a video is hovered
   useEffect(() => {
+    if (!preview || preview.type !== 'video') return;
     const v = previewVidRef.current;
-    if (!v || !previewSrc) return;
+    if (!v) return;
     v.muted = true;
     try { v.currentTime = 0; } catch { /* ignore */ }
     const p = v.play(); if (p && p.catch) p.catch(() => { /* ignore */ });
-  }, [previewSrc]);
+  }, [preview]);
 
   // click any media tile → open the lightbox
   useEffect(() => {
@@ -402,7 +426,7 @@ function MediaFX() {
       const t = (e.target as HTMLElement).closest?.('[data-media]') as HTMLElement | null;
       if (!t) return;
       e.preventDefault();
-      setPreviewSrc(null);
+      setPreview(null);
       setPop({
         type: (t.getAttribute('data-type') as 'image' | 'video') || 'image',
         src: t.getAttribute('data-src') || '',
@@ -425,11 +449,23 @@ function MediaFX() {
     };
   }, [pop]);
 
+  // play the popped-out video — the tap that opened it satisfies mobile autoplay;
+  // if sound is blocked, fall back to muted so it still plays
+  useEffect(() => {
+    if (!pop || pop.type !== 'video') return;
+    const v = popVidRef.current;
+    if (!v) return;
+    const p = v.play();
+    if (p && p.catch) p.catch(() => { v.muted = true; const p2 = v.play(); if (p2 && p2.catch) p2.catch(() => { /* ignore */ }); });
+  }, [pop]);
+
   return (
     <>
       {fine && (
-        <div className={'vpreview' + (previewSrc ? ' show' : '')} ref={previewRef} aria-hidden>
-          {previewSrc && <video ref={previewVidRef} src={previewSrc} muted loop playsInline preload="metadata" />}
+        <div className={'vpreview' + (preview ? ' show' : '')} ref={previewRef} aria-hidden>
+          {preview && (preview.type === 'video'
+            ? <video ref={previewVidRef} src={preview.src} muted loop playsInline preload="metadata" />
+            : <img src={preview.src} alt="" />)}
           <span className="vpreview-tag">{rd.cursor}</span>
         </div>
       )}
@@ -438,7 +474,7 @@ function MediaFX() {
           <button className="lightbox-x" type="button" aria-label="סגירה" onClick={() => setPop(null)}>×</button>
           <div className="lightbox-stage" onClick={(e) => e.stopPropagation()}>
             {pop.type === 'video'
-              ? <video src={pop.src} poster={pop.poster} controls autoPlay playsInline />
+              ? <video ref={popVidRef} src={pop.src} poster={pop.poster} controls autoPlay playsInline />
               : <img src={pop.src} alt="" />}
           </div>
         </div>
@@ -528,7 +564,7 @@ export default function Redesign({ ready }: { ready: boolean }) {
   return (
     <>
       <main id="site">
-        <Hero />
+        <Hero revealed={ready} />
         <Statement />
         <Bride />
         <Included />
