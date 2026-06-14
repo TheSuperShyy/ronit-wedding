@@ -1,0 +1,303 @@
+/*
+ * Cinematic video intro ("video gate"). Plays public/videos/gate.mp4 full-bleed
+ * with non-generic overlays: warm grade, vignette, gold frame, film grain, slow
+ * ken-burns, and a soft fade-out reveal. Scoped under .vgate.
+ */
+.vgate {
+  --gold: #c8a45c;
+  --gold-soft: #e7cf9a;
+  --soft: cubic-bezier(0.22, 1, 0.36, 1);
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  background: #0c0b09;
+  display: grid;
+  place-items: center;
+  font-family: 'Assistant', system-ui, sans-serif;
+  opacity: 1;
+  transition: opacity 0.9s var(--soft);
+}
+.vgate.is-out {
+  opacity: 0;
+}
+
+/* blurred copy of the clip fills the sides with the video's own warm colors
+   (instead of black bars) behind the sharp, uncropped foreground */
+.vgate-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.3);
+  /* match the video's own brightness/colour so the fill blends seamlessly */
+  filter: blur(48px) saturate(1.06) brightness(1);
+  opacity: 1;
+}
+/* fill the frame edge-to-edge (aspect preserved, no stretch — only a sliver
+   trimmed top/bottom since the clip is already near-widescreen) */
+.vgate-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+  /* gentle sharpening of the source: lift micro-contrast + saturation */
+  filter: contrast(1.08) saturate(1.06) brightness(1.02);
+  transition: transform 0.7s cubic-bezier(0.66, 0, 0.85, 0.3);
+}
+/* zoom-through the gate as the flash floods */
+.vgate.is-flash .vgate-video,
+.vgate.is-flash .vgate-bg {
+  animation: none;
+  transform: scale(1.7);
+}
+
+/* warm cinematic grade so it doesn't read like a raw clip */
+.vgate-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(42, 30, 12, 0.14), rgba(12, 9, 6, 0.08) 40%, rgba(10, 7, 4, 0.34));
+  mix-blend-mode: multiply;
+}
+.vgate-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: radial-gradient(132% 112% at 50% 46%, transparent 58%, rgba(6, 4, 2, 0.34) 100%);
+}
+.vgate-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* gold frame */
+.vgate-frame {
+  position: absolute;
+  inset: clamp(14px, 2.2vw, 30px);
+  z-index: 7;
+  pointer-events: none;
+  border: 1px solid rgba(220, 193, 138, 0.55);
+  border-radius: 3px;
+}
+/* inner hairline for a refined double-line frame */
+.vgate-frame::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(220, 193, 138, 0.28);
+  border-radius: 2px;
+}
+
+.vgate-besd {
+  position: absolute;
+  inset-block-start: clamp(24px, 4vw, 46px);
+  inset-inline-start: clamp(24px, 4.5vw, 56px);
+  z-index: 8;
+  writing-mode: vertical-rl;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: rgba(247, 241, 230, 0.82);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* logo pinned to the top so it never sits over the gate */
+.vgate-logo {
+  position: absolute;
+  z-index: 8;
+  inset-block-start: clamp(26px, 5vh, 60px);
+  left: 50%;
+  transform: translateX(-50%);
+  height: clamp(60px, 8vmin, 96px);
+  width: auto;
+  filter: drop-shadow(0 2px 18px rgba(0, 0, 0, 0.7));
+  animation: vgateRise 1.2s var(--soft) 0.25s both;
+}
+/* branding anchored to the bottom, clear of the ornate gate */
+.vgate-head {
+  position: absolute;
+  z-index: 8;
+  inset-block-end: clamp(76px, 13vh, 150px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(92%, 900px);
+  text-align: center;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: vgateRise 1.5s var(--soft) 0.35s both;
+}
+.vgate-ev {
+  font-weight: 600;
+  font-size: clamp(11px, 1.1vw, 14px);
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(231, 207, 154, 0.92);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+  margin-bottom: clamp(14px, 2vw, 22px);
+}
+.vgate-title {
+  margin: 0;
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  color: #fff;
+  font-size: clamp(40px, 6.6vw, 104px);
+  text-shadow: 0 4px 44px rgba(0, 0, 0, 0.5);
+}
+.vgate-title .g {
+  background-image: linear-gradient(100deg, #f3dca0, #fff4d8 30%, #c8a45c 55%, #fff4d8 75%, #e7cf9a);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: vgateFoil 6s linear infinite;
+}
+@keyframes vgateFoil { to { background-position: 220% center; } }
+
+/* enter prompt (shown until the clip is playing) + skip */
+.vgate-enter,
+.vgate-skip {
+  position: absolute;
+  z-index: 9;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  font-family: inherit;
+}
+/* themed gold CTA pill, centred near the bottom */
+.vgate-enter {
+  inset-block-end: clamp(44px, 9vh, 96px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: clamp(13px, 1.5vw, 17px) clamp(30px, 3.4vw, 46px);
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: clamp(14px, 1.3vw, 17px);
+  letter-spacing: 0.14em;
+  color: #3a322a; /* ink */
+  background: linear-gradient(135deg, #e7cf9a 0%, #f3dca0 26%, #c8a45c 70%, #a87f38 100%);
+  box-shadow: 0 10px 30px rgba(168, 127, 56, 0.4), inset 0 1px 0 rgba(255, 248, 230, 0.6);
+  transition: transform 0.25s var(--soft), box-shadow 0.25s var(--soft), filter 0.25s var(--soft);
+  animation: vgateEnterIn 1s var(--soft) 0.2s both, vgateGlow 2.8s ease-in-out 1.2s infinite;
+}
+@keyframes vgateEnterIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.vgate-enter:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 16px 40px rgba(168, 127, 56, 0.5), inset 0 1px 0 rgba(255, 248, 230, 0.7);
+  filter: brightness(1.05);
+}
+.vgate-enter:active {
+  transform: translateX(-50%) translateY(0);
+}
+@keyframes vgateGlow {
+  0%, 100% { box-shadow: 0 10px 30px rgba(168, 127, 56, 0.4), inset 0 1px 0 rgba(255, 248, 230, 0.6); }
+  50% { box-shadow: 0 12px 38px rgba(200, 164, 92, 0.62), inset 0 1px 0 rgba(255, 248, 230, 0.7); }
+}
+.vgate-skip {
+  inset-block-end: clamp(26px, 4vh, 42px);
+  inset-inline-end: clamp(22px, 4vw, 50px);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(247, 241, 230, 0.72);
+  border: 1px solid rgba(247, 241, 230, 0.32);
+  border-radius: 999px;
+  padding: 9px 22px;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  transition: color 0.2s var(--soft), border-color 0.2s var(--soft);
+}
+.vgate-skip:hover {
+  color: #fff;
+  border-color: rgba(231, 207, 154, 0.7);
+}
+
+/* delicate gold filigree in the four corners */
+.vgate-corners {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+.vgate-corners .vc {
+  position: absolute;
+  width: clamp(64px, 8vw, 128px);
+  height: clamp(64px, 8vw, 128px);
+  color: var(--gold-soft);
+  opacity: 0.66;
+  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 5px rgba(231, 207, 154, 0.4));
+  animation: vgateFade 1.4s var(--soft) 0.5s both;
+}
+.vgate-corners .tl { inset-block-start: clamp(20px, 3vw, 40px); inset-inline-start: clamp(20px, 3vw, 40px); }
+.vgate-corners .tr { inset-block-start: clamp(20px, 3vw, 40px); inset-inline-end: clamp(20px, 3vw, 40px); transform: scaleX(-1); }
+.vgate-corners .bl { inset-block-end: clamp(20px, 3vw, 40px); inset-inline-start: clamp(20px, 3vw, 40px); transform: scaleY(-1); }
+.vgate-corners .br { inset-block-end: clamp(20px, 3vw, 40px); inset-inline-end: clamp(20px, 3vw, 40px); transform: scale(-1, -1); }
+
+/* slow-drifting gold light dust */
+.vgate-dust {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  overflow: hidden;
+}
+.vgate-dust span {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 244, 216, 0.95), rgba(231, 207, 154, 0.4) 55%, rgba(231, 207, 154, 0) 75%);
+  box-shadow: 0 0 8px 2px rgba(255, 226, 168, 0.35);
+  opacity: 0;
+  mix-blend-mode: screen;
+  animation-name: vgateDust;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes vgateDust {
+  0% { opacity: 0; transform: translateY(0) translateX(0) scale(0.8); }
+  12% { opacity: 0.85; }
+  85% { opacity: 0.7; }
+  100% { opacity: 0; transform: translateY(-86vh) translateX(14px) scale(1.1); }
+}
+@keyframes vgateFade { from { opacity: 0; } to { opacity: 0.66; } }
+
+/* the blinding white flash — "passing through the gate" */
+.vgate-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #ffffff 60%, rgba(255, 255, 255, 0.6) 84%, rgba(255, 255, 255, 0) 100%);
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+.vgate.is-flash .vgate-flash {
+  animation: vgateFlash 0.4s ease-out both;
+}
+@keyframes vgateFlash {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+@keyframes vgateRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes vgatePulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }

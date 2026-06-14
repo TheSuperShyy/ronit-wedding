@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import GateIntro from './components/intro/GateIntro';
+import VideoGate from './components/intro/VideoGate';
 import Redesign from './components/redesign/Redesign';
 
 export default function App() {
@@ -8,7 +8,7 @@ export default function App() {
   const [ready, setReady] = useState(false);
   return (
     <>
-      {!ready && <GateIntro onDone={() => setReady(true)} />}
+      {!ready && <VideoGate onDone={() => setReady(true)} />}
       <Redesign ready={ready} />
     </>
   );

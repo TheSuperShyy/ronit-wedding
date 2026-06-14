@@ -88,8 +88,8 @@ Fonts: `display` = `sans` = `label` = Assistant (unified). Headings get weight v
 
 ## Page structure — the cinematic redesign (CURRENT, live)
 
-`src/App.tsx` renders **`GateIntro`** → **`Redesign`** (`components/redesign/Redesign.tsx`).
-App holds a `ready` flag: the gate plays first, and `onDone` flips `ready`, which boots the
+`src/App.tsx` renders **`VideoGate`** → **`Redesign`** (`components/redesign/Redesign.tsx`).
+App holds a `ready` flag: the intro plays first, and `onDone` flips `ready`, which boots the
 Lenis + ScrollTrigger scroll system for `#site`.
 
 `Redesign` reading order (all in that one file; styling in `src/styles/redesign.css`, imported in
@@ -105,9 +105,12 @@ opacity was overridden to 1 since our gate reveals by fading itself out). **Lead
 real `/api/lead` via `buildChallahLeadPayload` (field `name`s match it: `fullName, phone, eventType,
 eventDate, city, hearAbout`).
 
-`GateIntro` (`components/intro/GateIntro.tsx` + scoped `gate-intro.css`) is the GSAP gold-gate
-"tap to enter" cinematic that fades out to reveal Hero; skipped under reduced-motion; on `onDone`,
-`Redesign` calls `ScrollTrigger.refresh()`. Copy in `copy.he.ts` → `introGate`.
+`VideoGate` (`components/intro/VideoGate.tsx` + scoped `video-gate.css`) is the current intro: it
+plays `public/videos/gate.mp4` full-bleed with cinematic overlays (warm grade, vignette, gold frame,
+film grain, ken-burns) + centered branding, then fades out to reveal Hero on clip-end or skip.
+Autoplays muted with a tap fallback (mobile); skipped under reduced-motion. Copy in `copy.he.ts` →
+`introGate` (incl. `skip`). The older GSAP `GateIntro` (`components/intro/GateIntro.tsx` +
+`gate-intro.css`) is kept but no longer rendered.
 
 **Superseded:** the old Tailwind section components (`components/sections/*` — Hero, Intro, ForBride,
 WhatsIncluded, Gallery, etc.) and their UI deps (`Section`, `Reveal`, `Button`, `FoilText`, `GoldDecor`,

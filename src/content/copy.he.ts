@@ -21,9 +21,10 @@ export const introGate = {
   brand: 'אור הצדיק · רונית ברש',
   titleLead: 'ערב הפרשת חלה',
   titleAccent: 'שלא תשכחי בחיים',
-  enter: 'הקישי כדי להיכנס',
+  enter: 'פתחי את השער',
   enterSub: 'ל ח צ י   ע ל   ה ש ע ר',
   aria: 'הקישי כדי להיכנס לערב הפרשת חלה',
+  skip: 'דלג',
 } as const;
 
 export const intro = {
