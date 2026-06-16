@@ -3,16 +3,21 @@ import { Play } from 'lucide-react';
 import Section from '../layout/Section';
 import Reveal from '../motion/Reveal';
 import Lightbox, { type LightboxItem } from '../ui/Lightbox';
+import { ExpandableGallery } from '../ui/gallery-animation';
 import { videos } from '../../content/copy.he';
 
-const items: LightboxItem[] = videos.items.map((v) => ({ type: 'video', src: v.src, poster: v.poster }));
+const lbItems: LightboxItem[] = videos.items.map((v) => ({ type: 'video', src: v.src, poster: v.poster }));
+const stripItems = videos.items.map((v) => ({ poster: v.poster }));
 
-/** Video showcase — poster cards that open a full-screen player (with sound). */
+/**
+ * Video showcase. Desktop: hover-expand poster strip. Mobile: tap-friendly
+ * poster grid. Both open the video in the deck-animated Lightbox (with sound).
+ */
 export default function VideoGallery() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <Section bg="bg-cream-alt" className="cv-auto">
+    <Section bg="bg-cream" className="cv-auto">
       <div className="text-center">
         <Reveal>
           <p className="text-xs font-semibold uppercase tracking-[0.32em] text-accent sm:text-sm">
@@ -24,28 +29,28 @@ export default function VideoGallery() {
         </Reveal>
       </div>
 
-      <Reveal stagger className="mt-10 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+      {/* desktop: hover-expand strip */}
+      <Reveal className="mt-10 hidden md:block">
+        <ExpandableGallery items={stripItems} ariaLabel={videos.playAria} onOpen={setOpen} />
+      </Reveal>
+
+      {/* mobile: tap-friendly poster grid */}
+      <Reveal stagger className="mt-10 grid grid-cols-2 gap-4 md:hidden">
         {videos.items.map((v, i) => (
           <Reveal.Item key={v.src}>
             <button
               type="button"
               onClick={() => setOpen(i)}
-              aria-label="נגני סרטון"
-              className={`group relative block w-full overflow-hidden rounded-2xl shadow-card ring-1 ring-divider transition-shadow hover:shadow-cta focus:outline-none focus-visible:ring-4 focus-visible:ring-ink-deep/20 lg:rounded-3xl ${
+              aria-label={videos.playAria}
+              className={`group relative block w-full overflow-hidden rounded-2xl shadow-card ring-1 ring-divider focus:outline-none focus-visible:ring-4 focus-visible:ring-ink-deep/20 ${
                 v.portrait ? 'aspect-[9/16]' : 'aspect-video'
               }`}
             >
-              <img
-                src={v.poster}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="h-full w-full object-cover transition-transform duration-500 ease-soft group-hover:scale-[1.04]"
-              />
-              <span aria-hidden className="absolute inset-0 bg-ink-night/15 transition-colors group-hover:bg-ink-night/5" />
+              <img src={v.poster} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+              <span aria-hidden className="absolute inset-0 bg-ink-night/20" />
               <span className="absolute inset-0 flex items-center justify-center">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-cream/95 text-button shadow-cta backdrop-blur transition-transform duration-200 ease-soft group-hover:scale-110 sm:h-16 sm:w-16">
-                  <Play size={24} fill="currentColor" className="ms-0.5" />
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-cream/90 text-button shadow-cta backdrop-blur">
+                  <Play size={22} fill="currentColor" className="ms-0.5" />
                 </span>
               </span>
             </button>
@@ -53,7 +58,7 @@ export default function VideoGallery() {
         ))}
       </Reveal>
 
-      <Lightbox items={items} index={open} onClose={() => setOpen(null)} onIndex={setOpen} />
+      <Lightbox items={lbItems} index={open} onClose={() => setOpen(null)} onIndex={setOpen} />
     </Section>
   );
 }

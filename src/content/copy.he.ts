@@ -147,6 +147,7 @@ export const videos = {
     { src: '/videos/video-04.mp4', poster: '/videos/video-04.webp', portrait: false },
     { src: '/videos/video-05.mp4', poster: '/videos/video-05.webp', portrait: false },
   ],
+  playAria: 'נגני סרטון',
 } as const;
 
 /** Contact details. Office phone taken from the brand's live site (Re-Design.md
