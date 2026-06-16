@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState, type FormEvent, type InputHTMLAttributes } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import Section from '../layout/Section';
 import Reveal from '../motion/Reveal';
 import { SOFT_EASE } from '../motion/variants';
 import { buildChallahLeadPayload } from '../../lib/lead-payload';
 import { leadForm } from '../../content/copy.he';
 
 const fieldClass =
-  'w-full rounded-xl border border-line bg-ivory px-4 py-3 text-ink text-base ' +
-  'placeholder:text-ink-soft focus:outline-none focus:border-gold focus:ring-4 focus:ring-gold/20 transition-shadow';
-const labelClass = 'block text-ink font-semibold mb-1.5 text-[15px]';
+  'w-full rounded-xl border border-cream/40 bg-cream/95 px-4 py-3 text-base text-ink-body ' +
+  'placeholder:text-ink-deep/40 focus:outline-none focus:ring-4 focus:ring-cream/40 transition-shadow';
+const labelClass = 'block text-cream font-semibold mb-1.5 text-base';
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & { id: string; label: string };
 
@@ -17,7 +18,11 @@ function Field({ id, label, ...rest }: InputProps) {
     <div>
       <label htmlFor={id} className={labelClass}>
         {label}
-        {rest.required && <span className="text-rose-500 ms-1" aria-hidden>*</span>}
+        {rest.required && (
+          <span className="text-rose-300 ms-1" aria-hidden>
+            *
+          </span>
+        )}
       </label>
       <input id={id} name={id} className={fieldClass} {...rest} />
     </div>
@@ -26,12 +31,13 @@ function Field({ id, label, ...rest }: InputProps) {
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 const TOAST_TONE: Record<Exclude<Status, 'idle'>, string> = {
-  submitting: 'bg-white text-ink border border-line',
-  success: 'bg-emerald-700/95 text-white',
-  error: 'bg-rose-800/95 text-white',
+  submitting: 'bg-ink-deep text-cream',
+  success: 'bg-emerald-700/95 text-cream',
+  error: 'bg-rose-800/95 text-cream',
 };
 const TOAST_DISMISS_MS = 5000;
 
+/** Lead capture — posts to the real /api/lead via buildChallahLeadPayload. §12. */
 export default function LeadForm() {
   const [status, setStatus] = useState<Status>('idle');
   const reduced = useReducedMotion();
@@ -65,18 +71,16 @@ export default function LeadForm() {
   const isSubmitting = status === 'submitting';
 
   return (
-    <section id="lead-form" className="relative bg-linen py-20 sm:py-24 lg:py-32">
-      <div className="mx-auto max-w-xl px-6">
-        <div className="mb-9 text-center">
-          <Reveal>
-            <div aria-hidden className="mx-auto mb-6 h-px w-16 bg-gradient-to-r from-transparent via-gold to-transparent" />
-            <h2 className="font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl">{leadForm.title}</h2>
-            <p className="mt-3 text-ink-soft">{leadForm.subtitle}</p>
-          </Reveal>
-        </div>
+    <Section bg="bg-accent" id="lead">
+      <div className="mx-auto max-w-xl">
+        <Reveal className="mb-10 text-center">
+          <h2 className="text-balance text-3xl font-extrabold text-cream sm:text-4xl">{leadForm.title}</h2>
+          <p className="mt-3 text-cream/85">{leadForm.subtitle}</p>
+        </Reveal>
+
         <Reveal>
-          <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-line bg-white p-6 shadow-[0_18px_50px_rgba(58,50,42,0.12)] sm:p-8">
-            <div className="grid gap-4 sm:grid-cols-2">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid gap-5 sm:grid-cols-2">
               <Field id="fullName" label={f.fullName} autoComplete="name" required />
               <Field id="phone" label={f.phone} type="tel" inputMode="tel" autoComplete="tel" required />
               <Field id="eventType" label={f.eventType} />
@@ -85,16 +89,34 @@ export default function LeadForm() {
               <Field id="hearAbout" label={f.hearAbout} />
             </div>
             <div className="pt-2 text-center">
-              <button
+              <motion.button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-full bg-gradient-to-br from-gold-lite to-gold px-9 py-4 font-bold text-[#2a1d0e] shadow-cta transition-transform hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-70 sm:w-auto"
+                className="relative isolate w-full rounded-full bg-button px-9 py-4 font-bold text-button-text shadow-cta transition-shadow ease-soft duration-200 hover:shadow-[0_14px_30px_rgba(135,87,62,0.4)] disabled:cursor-wait disabled:opacity-70 sm:w-auto"
               >
-                {isSubmitting ? leadForm.submitting : leadForm.cta}
-              </button>
+                {!reduced && !isSubmitting && (
+                  <motion.span
+                    aria-hidden
+                    className="absolute inset-0 -z-10 rounded-full bg-button"
+                    animate={{ scale: [1, 1.12, 1], opacity: [0.5, 0, 0.5] }}
+                    transition={{ duration: 2.4, ease: 'easeInOut', repeat: Infinity }}
+                  />
+                )}
+                {isSubmitting ? (
+                  <span className="inline-flex items-center gap-2">
+                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                      <path d="M21 12a9 9 0 11-6.219-8.56" strokeLinecap="round" />
+                    </svg>
+                    {leadForm.submitting}
+                  </span>
+                ) : (
+                  leadForm.cta
+                )}
+              </motion.button>
             </div>
           </form>
         </Reveal>
+
         <AnimatePresence>
           {status !== 'idle' && (
             <motion.div
@@ -112,6 +134,6 @@ export default function LeadForm() {
           )}
         </AnimatePresence>
       </div>
-    </section>
+    </Section>
   );
 }

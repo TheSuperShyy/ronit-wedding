@@ -1,36 +1,57 @@
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 
-type Props = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'onAnimationStart' | 'onDragStart' | 'onDragEnd' | 'onDrag'> & {
+type Variant = 'primary' | 'ghost';
+
+type Props = Omit<
+  AnchorHTMLAttributes<HTMLAnchorElement>,
+  'onAnimationStart' | 'onDragStart' | 'onDragEnd' | 'onDrag'
+> & {
   children: ReactNode;
+  variant?: Variant;
+  /** Soft expanding ring (primary only, off under reduced motion). */
+  pulse?: boolean;
 };
 
-export default function Button({ children, className = '', ...rest }: Props) {
+/**
+ * Primary (deep-brown fill) / ghost (outline) CTA. Anchor-based — all CTAs on
+ * the page scroll to the lead form (#lead). Honors reduced motion.
+ */
+export default function Button({
+  children,
+  variant = 'primary',
+  pulse = false,
+  className = '',
+  ...rest
+}: Props) {
   const reduced = useReducedMotion();
+
+  const base =
+    'relative inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-wide select-none ' +
+    'px-10 py-4 text-base sm:text-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-ink-deep/20 ' +
+    'transition-shadow ease-soft duration-200 isolate';
+
+  const styles =
+    variant === 'primary'
+      ? 'bg-button text-button-text shadow-cta hover:shadow-[0_14px_30px_rgba(135,87,62,0.4)]'
+      : 'bg-transparent text-ink-deep border border-ink-deep/30 hover:border-ink-deep/60';
+
   return (
     <motion.a
       whileHover={reduced ? undefined : { y: -3 }}
       whileTap={reduced ? undefined : { y: 0, scale: 0.98 }}
-      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-      className={
-        'relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full ' +
-        'px-9 py-4 font-sans text-base font-bold text-[#2a1d0e] shadow-cta isolate ' +
-        'bg-gradient-to-br from-gold-lite to-gold focus:outline-none focus-visible:ring-4 focus-visible:ring-gold/40 ' +
-        className
-      }
+      transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+      className={`${base} ${styles} ${className}`}
       {...(rest as any)}
     >
-      {!reduced && (
-        <span
+      {pulse && !reduced && variant === 'primary' && (
+        <motion.span
           aria-hidden
-          className="absolute inset-y-0 -left-3/5 w-2/5 -skew-x-12"
-          style={{
-            background: 'linear-gradient(120deg,transparent,rgba(255,255,255,.7),transparent)',
-            animation: 'btn-sweep 4.5s 2s infinite',
-          }}
+          className="absolute inset-0 rounded-full bg-button -z-10"
+          animate={{ scale: [1, 1.12, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ duration: 2.4, ease: 'easeInOut', repeat: Infinity }}
         />
       )}
-      <style>{`@keyframes btn-sweep { 0% { left: -60%; } 22%, 100% { left: 140%; } }`}</style>
       <span className="relative">{children}</span>
     </motion.a>
   );

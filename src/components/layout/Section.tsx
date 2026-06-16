@@ -1,33 +1,49 @@
 import type { ReactNode } from 'react';
 import Container from './Container';
-import GoldDecor from '../ui/GoldDecor';
+import BrandLogo from '../ui/BrandLogo';
+import CallPill from '../ui/CallPill';
 
 type Props = {
   children: ReactNode;
-  id?: string;
   bg?: string;
   className?: string;
-  /** Render children edge-to-edge (no Container/padding). */
-  full?: boolean;
-  /** Add the soft gold feminine backdrop behind the content. */
-  decor?: boolean;
+  id?: string;
+  padded?: boolean;
+  /** Suppress the top BrandLogo (when this section merges with the one above). */
+  noLogo?: boolean;
+  /** Suppress the bottom CallPill (when this section merges with the one below). */
+  noPill?: boolean;
 };
 
+// Backgrounds dark enough that the call-pill needs the ivory/glass treatment.
+const DARK_BGS = new Set(['bg-ink-deep', 'bg-ink-night', 'bg-accent', 'bg-hero']);
+
+/**
+ * Page-block wrapper: applies the bg token, the vertical padding rhythm, and
+ * auto-mounts a centered BrandLogo (top) + CallPill (bottom) so every section
+ * reads like its own page. Re-Design.md §4 + §8. Sets no heading color.
+ */
 export default function Section({
   children,
-  id,
-  bg = 'bg-ivory',
+  bg = 'bg-cream',
   className = '',
-  full = false,
-  decor = false,
+  id,
+  padded = true,
+  noLogo = false,
+  noPill = false,
 }: Props) {
+  const theme = DARK_BGS.has(bg) ? 'dark' : 'light';
   return (
     <section
       id={id}
-      className={`relative ${decor ? 'overflow-hidden' : ''} ${bg} ${full ? '' : 'py-20 sm:py-24 lg:py-32'} ${className}`}
+      data-header-theme={theme}
+      className={`${bg} ${padded ? `${noLogo ? 'pt-0' : 'pt-4 sm:pt-6'} ${noPill ? 'pb-0' : 'pb-4 sm:pb-6'}` : ''} ${className}`}
     >
-      {decor && <GoldDecor />}
-      {full ? children : <Container className="relative z-10">{children}</Container>}
+      {!noLogo && <BrandLogo />}
+      <div className={padded ? `${noLogo ? 'pt-4 sm:pt-6' : '-mt-6 pt-0 sm:-mt-8'} ${noPill ? 'pb-4 sm:pb-6' : 'pb-8 sm:pb-12 lg:pb-16'}` : ''}>
+        <Container>{children}</Container>
+      </div>
+      {!noPill && <CallPill theme={theme} />}
     </section>
   );
 }

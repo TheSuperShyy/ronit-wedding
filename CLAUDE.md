@@ -12,32 +12,31 @@ Bat Mitzvahs, pre-birth blessings, and prayers for salvation/healing.
 
 **Language:** Hebrew only (RTL). English was deferred.
 
-**Aesthetic:** soft **ivory + gold "peaceful wedding"** — light, airy, elegant,
-restrained gold accents, an elegant serif for headings, the all-white event photos
-framed in gold. (Design history: a warm-cream version read too much like the sister
-Uman page; a dark high-fashion version felt generic; the client settled on this
-ivory+gold direction. It is intentionally its own look, NOT a copy of the Uman page.)
+**Aesthetic:** **warm earth-tones** ("peaceful wedding") — cream backgrounds, warm-tan
+hero, deep-brown CTAs, soft gold accents, Assistant type, calm and elegant. This page now
+**intentionally matches the sister Uman / Tu B'Av page's design system** (see `Re-Design.md`
+at the repo root — the shared spec extracted from that page). (Design history: it briefly ran
+an ivory+gold look, then a GSAP/Lenis cinematic redesign with a video gate; the client chose
+to unify it with the sister page's warm system. Those earlier versions were removed.)
 
-There is a sister site (`../inbalel-website`, the Uman / Tu B'Av trip) — same brand,
-same lead backend — but this page has its own distinct design. Don't re-mirror it.
+The sister site is `../uman-tu-bav-landing` (the Uman / Tu B'Av trip) — same brand, same lead
+backend, and now the **same design system**. `Re-Design.md` is the source of truth for tokens,
+type, motion, and RTL rules; keep them in sync.
 
 ## Stack
 
-- **Vite + React 18 + TypeScript** — SPA, single page, no router, anchor scroll.
+- **Vite + React 18 + TypeScript** — SPA, single page, no router, anchor scroll (CTAs → `#lead`).
 - **Tailwind CSS 3** — all tokens in `tailwind.config.ts`; avoid hardcoding hex in JSX.
-- **GSAP 3 + ScrollTrigger** + **Lenis** — the core motion system for the **cinematic redesign**
-  (the live page): smooth/momentum scroll (Lenis) wired to `ScrollTrigger.update` via `gsap.ticker`,
-  plus all reveals, parallax, line-mask rises, and the scroll-assembling gallery collage. Set up in
-  `components/redesign/Redesign.tsx` → `useRedesignScroll(ready)` (gated so it boots after the gate
-  opens). GSAP also drives the gate overlay (`components/intro/GateIntro.tsx`).
-- **Framer Motion** — now only used by `GateIntro` (`useReducedMotion`) and the older (now unused)
-  section components. Not used by the redesign.
-- **lucide-react** — line icons. **clsx + tailwind-merge** — the `cn()` helper.
+- **Framer Motion** — the **only** motion system: `<Reveal>` (fade+Y on view, once),
+  `<Reveal.Item>` (staggered list children), `<Button>` (hover lift + optional pulse),
+  `FloatingDecor` (slow float). Every animated component honors `useReducedMotion()`.
+  (GSAP + Lenis and the cinematic redesign/video-gate were **removed** — they may still be in
+  `package.json` as unused deps.)
+- **lucide-react** — line icons (Check, Play, ChevronLeft/Right, X, Phone). **clsx + tailwind-merge** — `cn()`.
 - **sharp** (image optimize) + **ffmpeg/ffprobe** (video optimize). **vitest** — one logic test.
-- Font (Google): **Assistant** everywhere — `display`, `sans`, and `label` all map to Assistant
-  (weights 300–800). Headings are heavy (hero `font-extrabold`, section titles `font-bold`) for the
-  modern bold look matching the sister site. (History: started on Frank Ruhl Libre serif headings;
-  client wanted the modern Assistant look from orhazadik.online, so we unified on Assistant.)
+- Font (Google): **Assistant** everywhere (`sans` = `display`), weights **300–800**. Headings
+  `font-bold` (hero `font-extrabold`); no global heading color — each section sets its own
+  (`text-ink-deep` on cream, `text-ivory` on photo/dark overlays).
 
 ## Run
 
@@ -55,25 +54,29 @@ npm run optimize:videos# videos  → public/videos/*.mp4 + .webp posters
 `vite.config.ts` requires a **dev server restart** — Vite caches these and HMR won't
 pick them up (symptom: stale colors, or a `bg-…` "class does not exist" overlay).
 
-## Design tokens (ivory + gold)
+## Design tokens (warm earth-tones)
 
-In `tailwind.config.ts` → `theme.extend.colors`:
+In `tailwind.config.ts` → `theme.extend.colors` (mirrors `Re-Design.md` §2):
 
 | Token | Value | Purpose |
 |---|---|---|
-| `ivory` | `#fbf8f2` | primary section background, light text on photos |
-| `linen` | `#f3ecdf` | alternating section background |
-| `champagne` | `#efe3cf` | gold-tinted panels / icon chips / footer |
-| `ink` | `#3a322a` | headings + body (warm near-black) |
-| `ink-soft` | `#6b5f4f` | secondary / muted text |
-| `gold` | `#c8a45c` | primary accent (rules, frames, CTA) |
-| `gold-deep` | `#a87f38` | gold text on light (better contrast) |
-| `gold-lite` | `#e7cf9a` | CTA gradient highlight |
-| `line` | `#e6dcc9` | hairline borders |
+| `hero` | `#b89e8b` | hero + closing-quote background (warm tan) |
+| `cream` | `#fffcf9` | primary section background |
+| `cream-alt` | `#fffbf9` | alternating section background |
+| `accent` | `#c3957d` | CTA / form section background (rose-tan) |
+| `accent-soft` | `#e6d2c4` | soft accent fills / chips |
+| `button` | `#87573e` | primary button fill (deep brown) |
+| `button-text` | `#eeecea` | button label |
+| `ink-deep` | `#6b4532` | headings on light backgrounds |
+| `ink-body` | `#2d2d2d` | body copy |
+| `ink-night` | `#1a1612` | darkest sections / photo overlays / footer |
+| `ivory` | `#faf6ee` | headings/text on photo & dark overlays |
+| `divider` | `#efe5dc` | hairline borders / separators |
+| `gold` | `#c5a572` | small decorative accents |
 
-Fonts: `display` = `sans` = `label` = Assistant (unified). Headings get weight via Tailwind utilities.
-`maxWidth.container = 906px`; `ease-soft = cubic-bezier(0.22,1,0.36,1)`; shadows `card`,`cta`.
-(Older dark tokens `noir/coal/bone/mute` may linger in config but are unused — ignore.)
+Fonts: `sans` = `display` = Assistant. `maxWidth.container = 906px`;
+`ease-soft = cubic-bezier(0.22,1,0.36,1)`; shadows `card`,`cta`. Base body is
+`bg-cream text-ink-body`, 18px / 1.7. Utilities `.text-balance`, `.text-pretty`, `.cv-auto`.
 
 ## Content
 
@@ -86,61 +89,36 @@ Fonts: `display` = `sans` = `label` = Assistant (unified). Headings get weight v
 - `contact.phone` is a **placeholder** (`+972000000000`, TODO) — swap in the real
   phone/WhatsApp when the client provides it.
 
-## Page structure — the cinematic redesign (CURRENT, live)
+## Page structure (CURRENT)
 
-`src/App.tsx` renders **`VideoGate`** → **`Redesign`** (`components/redesign/Redesign.tsx`).
-App holds a `ready` flag: the intro plays first, and `onDone` flips `ready`, which boots the
-Lenis + ScrollTrigger scroll system for `#site`.
+`src/App.tsx` mounts a single floating **`BrandLogo`** (once, not per-section) then the sections
+in reading order — no intro/gate:
 
-`Redesign` reading order (all in that one file; styling in `src/styles/redesign.css`, imported in
-`main.tsx`): **Hero** (full-bleed photo, stacked gold title, media marquee, scroll cue) → **Statement**
-→ **Bride (01)** → **Included (02)** → cinematic **PullBand** quote → **PerfectFor (03)** → **WhyUs (04)**
-→ **KeywordBand** marquee → **Gallery (05)** (desktop: GSAP scroll-assembling collage; mobile: `.gmob`
-mosaic) → **VideoFeature** → closing **PullBand** → **CtaForm** (giant CTA + lead form) → **Footer**,
-plus a custom **Cursor** and `page-grain`. All copy lives in `copy.he.ts` → `rd` (no Hebrew in JSX).
+**Hero** (`#top`, full-viewport photo + warm scrim, stacked title, CTA) → **Intro** (lead + "more"
+chips + promise) → **ForBride** (text + arch photo + fits chips) → **WhatsIncluded** (checklist +
+ceremony photo + duration) → **CinematicQuote** (full-bleed photo, one line) → **PerfectFor** (list) →
+**WhyUs** (numbered cards) → `<Divider>` → **Gallery** (masonry + Lightbox) → **VideoMoment** (ambient
+full-bleed video) → **VideoGallery** (poster cards → Lightbox player) → **ClosingQuote** (warm-tan +
+CTA) → **LeadForm** (`#lead`) → **Footer**.
 
-The redesign was recreated from the handoff in `redesign-intro/design_handoff_challah_evening/`
-(README + `app.jsx` + `site.css` — `site.css` was copied to `src/styles/redesign.css`; `#hero`
-opacity was overridden to 1 since our gate reveals by fading itself out). **Lead form** posts to the
-real `/api/lead` via `buildChallahLeadPayload` (field `name`s match it: `fullName, phone, eventType,
-eventDate, city, hearAbout`).
-
-`VideoGate` (`components/intro/VideoGate.tsx` + scoped `video-gate.css`) is the current intro: it
-plays `public/videos/gate.mp4` full-bleed with cinematic overlays (warm grade, vignette, gold frame,
-film grain, ken-burns) + centered branding, then fades out to reveal Hero on clip-end or skip.
-Autoplays muted with a tap fallback (mobile); skipped under reduced-motion. Copy in `copy.he.ts` →
-`introGate` (incl. `skip`). The older GSAP `GateIntro` (`components/intro/GateIntro.tsx` +
-`gate-intro.css`) is kept but no longer rendered.
-
-**Superseded:** the old Tailwind section components (`components/sections/*` — Hero, Intro, ForBride,
-WhatsIncluded, Gallery, etc.) and their UI deps (`Section`, `Reveal`, `Button`, `FoilText`, `GoldDecor`,
-`bento-grid`, `video-carousel`, `Lightbox`) are **no longer rendered** by `App.tsx`. They're dead code
-kept for now — safe to delete once the redesign is signed off.
+All copy lives in `copy.he.ts` (no Hebrew in JSX; `alt` is the only exception). The `rd` and
+`introGate` exports there are leftovers from the removed redesign/gate — sections use the
+top-level exports (`hero, intro, bride, included, cinematic, perfectFor, whyUs, gallery,
+videoMoment, videos, closing, leadForm, footer, contact, meta`).
 
 ## Components
 
-- `components/layout/Section.tsx` — section wrapper. Props: `bg` (default `bg-ivory`),
-  `className`, `full`, **`decor`** (adds the gold floral backdrop). `Container.tsx` = 906px centered.
-- `components/ui/GoldDecor.tsx` — soft gold backdrop: corner glows + a delicate gold
-  quatrefoil pattern that **fades out toward the center** (radial mask) so it only frames
-  edges, never sits behind text. Toggle per-section via `<Section decor>`. Currently on
-  Intro, WhatsIncluded, Gallery, and the (custom) VideoGallery section.
-- `components/ui/Lightbox.tsx` — click-to-zoom popout for images AND videos (Esc / arrows
-  / click-out; RTL arrows). Reusable.
-- `components/ui/video-carousel.tsx` — **3D coverflow** for videos (from 21st.dev, recolored).
-  Only the centered clip plays (muted loop); sides show blurred posters. Auto-rotates,
-  pauses on hover, reduced-motion safe. Center has an **expand** icon → opens the Lightbox
-  (sound). Nav chevrons are flipped for RTL.
-- `components/ui/bento-grid.tsx` — 21st.dev (kokonutd) bento, recolored to ivory+gold;
-  status/tags/cta are optional. Used by **WhyUs** with lucide icons.
-- `components/ui/Button.tsx` (gold gradient CTA, anchor), `FoilText.tsx` (gold shimmer,
-  reduced-motion safe), `LogoBadge.tsx`.
-- `components/motion/{Reveal.tsx,variants.ts}` — `<Reveal>` (fade+Y on view, once) and
-  `<Reveal.Item>` for staggered lists (`staggerChildren: 0.08`).
-
-**21st.dev integrations** were fetched from the shadcn registry (`https://21st.dev/r/<author>/<slug>`),
-recolored to our tokens, pointed at framer-motion (not `motion/react`), and stripped of
-shadcn-only primitives (the demo `Button` needs shadcn CSS vars we don't have).
+- `components/layout/Section.tsx` — section wrapper: `bg` (default `bg-cream`), `className`,
+  `full` (edge-to-edge, no container/padding). `Container.tsx` = 906px centered.
+- `components/motion/{Reveal.tsx,variants.ts}` — `<Reveal>` (fade+Y on view, once, `amount:0.15`)
+  and `<Reveal.Item>` for staggered lists (`staggerChildren:0.08`). Both honor reduced motion.
+- `components/ui/Button.tsx` — anchor CTA, `variant` `primary` (deep-brown fill) / `ghost`
+  (outline), optional `pulse` ring. Hover lift `y:-3`, no color shift.
+- `components/ui/BrandLogo.tsx` — fixed top-center glass pill logo, mounted once in `App`.
+- `components/ui/Lightbox.tsx` — portal popout for images AND videos (Esc / arrows / click-out;
+  RTL-aware chevrons). Used by Gallery (images) and VideoGallery (videos, with sound).
+- `components/ui/FloatingDecor.tsx` — slow floating heart/sparkle/circle SVG (decorative).
+- `components/ui/Divider.tsx` — gradient hairline with a center gold diamond.
 
 ## Imports / aliases
 
@@ -151,8 +129,8 @@ TS flags `baseUrl` as a deprecation error, so we removed it. `cn` lives at `src/
 
 - `<html lang="he" dir="rtl">`. Tailwind **logical** utilities only: `ps-/pe-/ms-/me-/start-/end-`.
   Never `pl-/pr-/ml-/mr-`.
-- Every animated component honors `useReducedMotion()` (Reveal, Button, FoilText,
-  VideoCarousel, VideoMoment, Lightbox). Keep it calm — no bounce/large scale/rotate beyond the coverflow.
+- Every animated component honors `useReducedMotion()` (Reveal, Button, FloatingDecor,
+  Hero, VideoMoment). Keep it calm — no bounce, no `scale > 1.04`, no rotate.
 
 ## Media
 
@@ -179,10 +157,11 @@ State machine `idle|submitting|success|error` + toast. Local form needs `npx ver
 
 - Don't hardcode hex in components (use tokens); don't put Hebrew in JSX (use `copy.he.ts`).
 - Don't use directional RTL utilities (`pl/pr/ml/mr`) or add a router/extra pages.
-- Animation libs are **GSAP + ScrollTrigger + Lenis** (the redesign's motion system) and Framer Motion
-  (gate only). Don't add another; don't use the `@/` alias.
-- Don't decorate with emojis or default to a generic "AI" look — the client rejected both;
-  prefer restraint, real typography, gold line-icons, whitespace.
+- Animation lib is **Framer Motion** only. Don't add another (GSAP/Lenis were removed);
+  don't use the `@/` alias.
+- Don't re-add a global `h1–h4` color (it competes with overlay headings via specificity).
+- Don't add emoji *decoration* or a generic "AI" look — prefer restraint, real typography,
+  gold line-icons, whitespace. (Some client copy strings include emojis; render those as-is.)
 
 ## Project meta
 

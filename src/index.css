@@ -6,29 +6,43 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    /* Framer Motion's useScroll warns when its scroll container (<html>)
+       is position: static. Set it explicitly so offset calc is reliable. */
     position: relative;
   }
   body {
-    @apply bg-ivory text-ink font-sans antialiased;
+    @apply bg-cream text-ink-body font-sans antialiased;
     font-size: 18px;
-    line-height: 1.75;
+    line-height: 1.7;
     overflow-x: clip;
   }
-  /* No global heading color — each section sets its own. */
-  h1, h2, h3, h4 {
-    line-height: 1.18;
+  /* Heading color is NOT set in base — each section picks its own
+     (text-ink-deep on cream, text-ivory on photo overlays). A global
+     rule would compete with overlay headings via specificity. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-bold;
+    line-height: 1.25;
   }
   ::selection {
-    background: rgba(200, 164, 92, 0.22);
-    color: #3a322a;
+    background: rgba(135, 87, 62, 0.18);
+    color: #6b4532;
   }
 }
 
 @layer utilities {
-  .text-balance { text-wrap: balance; }
-  .text-pretty { text-wrap: pretty; }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  /* Skip layout + paint for sections far out of the viewport — perf win
+     on long pages. Pair with contain-intrinsic-size for correct scrollbar. */
   .cv-auto {
     content-visibility: auto;
-    contain-intrinsic-size: 800px;
+    contain-intrinsic-size: 900px;
   }
 }

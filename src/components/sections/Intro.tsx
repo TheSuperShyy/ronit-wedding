@@ -2,29 +2,31 @@ import Section from '../layout/Section';
 import Reveal from '../motion/Reveal';
 import { intro } from '../../content/copy.he';
 
+/** Soft opening statement: lead line, the four "more" words, and the promise. */
 export default function Intro() {
   return (
-    <Section bg="bg-ivory" decor className="text-start">
+    <Section bg="bg-cream" className="text-center">
       <Reveal>
-        <div aria-hidden className="mb-7 h-px w-16 bg-gradient-to-l from-gold to-transparent" />
-        <p className="font-display text-3xl font-medium leading-tight tracking-tight text-ink sm:text-4xl lg:text-5xl">
+        <p className="text-balance text-3xl font-bold leading-snug text-ink-deep sm:text-4xl">
           {intro.lead}
         </p>
       </Reveal>
-      <Reveal as="ul" stagger className="mt-8 flex flex-wrap items-center gap-3">
-        {intro.more.map((m) => (
+
+      <Reveal stagger className="mt-7 flex flex-wrap justify-center gap-2.5 sm:gap-3">
+        {intro.more.map((word) => (
           <Reveal.Item
-            as="li"
-            key={m}
-            className="group inline-flex items-center gap-2 rounded-full border border-gold/40 bg-champagne/60 px-5 py-2.5 shadow-[0_4px_14px_rgba(58,50,42,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/70 hover:bg-champagne"
+            key={word}
+            className="rounded-full bg-accent-soft px-5 py-2 text-base font-semibold text-ink-deep sm:text-lg"
           >
-            <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-gold transition-colors group-hover:bg-gold-deep" />
-            <span className="font-display text-lg font-medium tracking-tight text-gold-deep sm:text-xl">{m}</span>
+            {word}
           </Reveal.Item>
         ))}
       </Reveal>
-      <Reveal>
-        <p className="mt-9 max-w-2xl text-pretty text-ink-soft lg:text-lg">{intro.promise}</p>
+
+      <Reveal delay={0.1}>
+        <p className="text-pretty mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-ink-body">
+          {intro.promise}
+        </p>
       </Reveal>
     </Section>
   );
