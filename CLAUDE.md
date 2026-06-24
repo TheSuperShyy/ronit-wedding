@@ -2,6 +2,19 @@
 
 Instructions and context for Claude Code working in this project.
 
+## Working process (per task — follow this every time)
+
+Work **one task at a time** and stay focused on it; don't drift into adjacent
+changes or start the next thing without being asked.
+
+1. **Finish the task.** Do only what was asked, verify it, and report the result plainly.
+2. **Update context.** As soon as a task is done, update this `CLAUDE.md` so it
+   reflects the new state of the code (structure, components, copy keys, tokens,
+   behaviors). This file IS the project context — keep it current, never stale.
+3. **Remind to compact.** Before moving on to the next task, **remind the user to
+   run `/compact`** so each task starts from a fresh, focused context. Wait for
+   the user's next instruction; don't auto-start new work.
+
 ## Project Overview
 
 Single-page **Hebrew RTL** landing page for **Or HaTzadik – Ronit Barash**
@@ -85,40 +98,63 @@ Fonts: `sans` = `display` = Assistant. `maxWidth.container = 906px`;
   only allowed exception). `content/copy.he.md` is the human-readable mirror.
 - Don't paraphrase client wording. Key exports: `hero, intro, bride, included,
   cinematic, perfectFor, whyUs, closing, leadForm, footer, contact, gallery,
-  videoMoment, videos, scrollGallery(unused), meta`.
-- `contact.phone` is a **placeholder** (`+972000000000`, TODO) — swap in the real
-  phone/WhatsApp when the client provides it.
+  videoMoment, videos, meta` (`rd`, `introGate` are leftover/unused).
+- `contact.phone` = `050-2696862` (office line, from the brand's live site / `Re-Design.md`
+  §9) — **confirm with the client** it's the right line for Challah enquiries.
+  `contact.phoneLabel` = `לתיאום ערב`. Wired into every `CallPill` + the footer.
+- Recent copy keys: `bride.cta` (`להזמנת ערב`), `meta.backToTop`, `videos.playAria`.
+  Em-dashes (—) were stripped from the Hebrew copy (commas instead). Client revisions:
+  `cinematic.quote` uses commas (not periods) between clauses; `whyUs` card 05 desc =
+  `מהשיחה הראשונה ועד סיום האירוע, יד ביד יחד איתך`.
 
 ## Page structure (CURRENT)
 
-`src/App.tsx` mounts a single floating **`BrandLogo`** (once, not per-section) then the sections
-in reading order — no intro/gate:
+`src/App.tsx` mounts global chrome — **`SplashScreen`** (brand hold) + **`ScrollProgress`**
+(RTL top bar) — then the sections in reading order (no intro/gate). Each `<Section>`
+**auto-mounts a centered `BrandLogo` (top) + theme-aware `CallPill` (bottom)** — the
+"every section is its own page" rhythm; full-bleed sections hand-place them.
 
-**Hero** (`#top`, full-viewport photo + warm scrim, stacked title, CTA) → **Intro** (lead + "more"
-chips + promise) → **ForBride** (text + arch photo + fits chips) → **WhatsIncluded** (checklist +
-ceremony photo + duration) → **CinematicQuote** (full-bleed photo, one line) → **PerfectFor** (list) →
-**WhyUs** (numbered cards) → `<Divider>` → **Gallery** (masonry + Lightbox) → **VideoMoment** (ambient
-full-bleed video) → **VideoGallery** (poster cards → Lightbox player) → **ClosingQuote** (warm-tan +
-CTA) → **LeadForm** (`#lead`) → **Footer**.
+**Hero** (`#top`, parallax photo + ink-night scrim, **בס"ד pinned top-right (RTL `start`)**,
+spotlight kicker, chevron; CTA scrolls one screen down) → **FilmStrip** (dark auto-pan photo
+marquee) → **Intro** (lead + chips + promise) →
+**ForBride** (text-first on mobile + arch photo + fits chips; CTA → `#lead`) → **WhatsIncluded**
+(checklist + photo) → **CinematicQuote** (letterbox photo breather) → **PerfectFor** (list) →
+**WhyUs** (numbered cards) → `<Divider>` → **Gallery** (draggable stacked **PhotoGallery**;
+2-row grid on mobile; tap → Lightbox) → **VideoMoment** (letterbox video breather) →
+**VideoGallery** (hover-expand poster strip desktop / tap grid mobile → Lightbox video) →
+**LeadForm** (`#lead`, `bg-accent`) → **ClosingQuote** (shimmer line) → **Footer** (`bg-ink-deep`).
 
-All copy lives in `copy.he.ts` (no Hebrew in JSX; `alt` is the only exception). The `rd` and
-`introGate` exports there are leftovers from the removed redesign/gate — sections use the
-top-level exports (`hero, intro, bride, included, cinematic, perfectFor, whyUs, gallery,
-videoMoment, videos, closing, leadForm, footer, contact, meta`).
+CTAs: Hero + gallery buttons **scroll to the next section**; booking CTAs go to the form
+(`#lead`). All copy from `copy.he.ts` (no Hebrew in JSX; `alt` is the only exception). `rd` /
+`introGate` exports are leftovers from the removed redesign/gate — unused.
 
 ## Components
 
 - `components/layout/Section.tsx` — section wrapper: `bg` (default `bg-cream`), `className`,
-  `full` (edge-to-edge, no container/padding). `Container.tsx` = 906px centered.
+  `full`, `padded`, `noLogo`, `noPill`. Applies the padding rhythm + `data-header-theme`
+  (dark/light via `DARK_BGS`) and **auto-mounts `BrandLogo` (top) + `CallPill` (bottom)**.
+  `Container.tsx` = 906px centered.
+- `components/ui/BrandLogo.tsx` — centered brand logo at each section top (192/224/256px
+  desktop, **128px on mobile**); scroll-to-top on click.
+- `components/ui/CallPill.tsx` — centered tel pill at section bottom; light/dark theme rgba
+  table; reads `contact.phone`.
+- `components/ui/SplashScreen.tsx` — 3.5s brand hold (gold rings + breathing logo), fade-out.
+- `components/ui/ScrollProgress.tsx` — top gradient bar, fills from the right (RTL).
 - `components/motion/{Reveal.tsx,variants.ts}` — `<Reveal>` (fade+Y on view, once, `amount:0.15`)
-  and `<Reveal.Item>` for staggered lists (`staggerChildren:0.08`). Both honor reduced motion.
-- `components/ui/Button.tsx` — anchor CTA, `variant` `primary` (deep-brown fill) / `ghost`
-  (outline), optional `pulse` ring. Hover lift `y:-3`, no color shift.
-- `components/ui/BrandLogo.tsx` — fixed top-center glass pill logo, mounted once in `App`.
-- `components/ui/Lightbox.tsx` — portal popout for images AND videos (Esc / arrows / click-out;
-  RTL-aware chevrons). Used by Gallery (images) and VideoGallery (videos, with sound).
+  + `<Reveal.Item>` (stagger `0.08`). Reduced-motion safe.
+- `components/ui/Button.tsx` — anchor CTA, `variant` `primary` (deep-brown) / `ghost`, optional
+  `pulse`. Hover lift `y:-3`.
+- `components/ui/Card.tsx` — frosted body card with a warm hover lift (used by WhyUs).
+- `components/ui/Divider.tsx` — hairline with a slowly spinning gold sparkle.
 - `components/ui/FloatingDecor.tsx` — slow floating heart/sparkle/circle SVG (decorative).
-- `components/ui/Divider.tsx` — gradient hairline with a center gold diamond.
+- `components/ui/Lightbox.tsx` — portal popout for images AND videos. Opens with a
+  **"pulled from a deck of cards"** spring (rises + tilts; drops back on close) with faint
+  backing cards; dark RTL-aware nav arrows (chevrons point outward). Reduced-motion → fade.
+- `components/ui/gallery.tsx` — **`PhotoGallery`**: draggable fanned photo stack (desktop;
+  tap opens Lightbox, drag doesn't) + a 2-row tap grid on mobile. Used by the Gallery section.
+- `components/ui/gallery-animation.tsx` — **`ExpandableGallery`**: hover-expand poster strip
+  (hovered panel grows). Used by VideoGallery (desktop) with `onOpen` → Lightbox.
+- `components/sections/FilmStrip.tsx` — dark full-bleed auto-pan photo marquee.
 
 ## Imports / aliases
 
@@ -129,8 +165,11 @@ TS flags `baseUrl` as a deprecation error, so we removed it. `cn` lives at `src/
 
 - `<html lang="he" dir="rtl">`. Tailwind **logical** utilities only: `ps-/pe-/ms-/me-/start-/end-`.
   Never `pl-/pr-/ml-/mr-`.
-- Every animated component honors `useReducedMotion()` (Reveal, Button, FloatingDecor,
-  Hero, VideoMoment). Keep it calm — no bounce, no `scale > 1.04`, no rotate.
+- Every animated component honors `useReducedMotion()` (Reveal, Button, FloatingDecor, Hero,
+  VideoMoment, SplashScreen, ScrollProgress, Lightbox, PhotoGallery, ExpandableGallery).
+- Keep most motion calm (no bounce). Intentional larger-motion exceptions live in the
+  interactive galleries — draggable photos (hover scale ~1.08 + tilt), the hover-expand strip
+  (flex grow), and the Lightbox "deck" spring — all gated by reduced motion.
 
 ## Media
 

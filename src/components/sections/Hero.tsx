@@ -51,13 +51,18 @@ export default function Hero() {
         style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.3) 55%, transparent 85%)' }}
       />
 
+      <motion.p
+        {...rise(0.05)}
+        className="absolute start-5 top-5 z-20 text-sm font-semibold tracking-[0.3em] text-ivory/90 sm:start-7 sm:top-7 sm:text-base"
+        style={{ textShadow: TEXT_SHADOW }}
+      >
+        {meta.besd}
+      </motion.p>
+
       <BrandLogo />
 
       <div className="relative -mt-6 flex flex-1 flex-col items-center justify-center px-6 pb-12 pt-0 text-center sm:-mt-8 sm:justify-start">
         <div className="mx-auto w-full max-w-container">
-          <motion.p {...rise(0.05)} className="mb-3 text-sm font-semibold tracking-[0.3em]" style={{ textShadow: TEXT_SHADOW }}>
-            {meta.besd}
-          </motion.p>
           <motion.p
             {...rise(0.1)}
             className="mb-6 text-xs font-semibold uppercase tracking-[0.32em] text-gold sm:text-sm"
